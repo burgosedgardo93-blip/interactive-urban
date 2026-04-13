@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Layers — 4D Historical San Francisco</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #0e0e1a;
+      color: #e0d5c5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+
+    #header {
+      background: rgba(8, 8, 18, 0.97);
+      border-bottom: 1px solid #3a3020;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+
+    #title {
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      color: #d4a857;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    #title span {
+      font-size: 0.68rem;
+      color: #666;
+      display: block;
+      letter-spacing: 0.08em;
+      font-family: 'Arial', sans-serif;
+      margin-top: 1px;
+    }
+
+    /* ── Year slider ─────────────────────────────────────────────────────── */
+
+    #year-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 380px;
+    }
+
+    #year-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #777;
+      white-space: nowrap;
+    }
+
+    #year-display {
+      font-size: 1.55rem;
+      font-weight: bold;
+      color: #d4a857;
+      min-width: 3.2rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #year-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: linear-gradient(to right, #d4a857 var(--pct, 60%), #3a3020 var(--pct, 60%));
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #year-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: #d4a857;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(212,168,87,0.5);
+      cursor: pointer;
+    }
+
+    #year-slider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: #d4a857;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+
+    #year-range {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #555;
+      white-space: nowrap;
+    }
+
+    /* ── Category pills ──────────────────────────────────────────────────── */
+
+    #category-filters {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    #filters-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      color: #666;
+      margin-right: 2px;
+    }
+
+    .cat-pill {
+      padding: 3px 11px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      user-select: none;
+      letter-spacing: 0.04em;
+      background: transparent;
+    }
+
+    .cat-pill.active { opacity: 1; }
+    .cat-pill:not(.active) {
+      opacity: 0.35;
+      filter: grayscale(0.6);
+    }
+
+    /* ── Map area ────────────────────────────────────────────────────────── */
+
+    #map-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    /* ── Counter badge ───────────────────────────────────────────────────── */
+
+    #counter {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(8, 8, 18, 0.88);
+      border: 1px solid #3a3020;
+      border-radius: 5px;
+      padding: 6px 12px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #888;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    #counter strong { color: #d4a857; }
+
+    /* ── Legend ──────────────────────────────────────────────────────────── */
+
+    #legend {
+      position: absolute;
+      bottom: 30px;
+      left: 12px;
+      background: rgba(8, 8, 18, 0.88);
+      border: 1px solid #3a3020;
+      border-radius: 5px;
+      padding: 10px 14px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: #888;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    #legend h4 {
+      color: #d4a857;
+      margin-bottom: 8px;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Leaflet popup overrides ─────────────────────────────────────────── */
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(10, 10, 22, 0.97);
+      border: 1px solid #3a3020;
+      border-radius: 6px;
+      color: #e0d5c5;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.75);
+    }
+
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-close-button { color: #666 !important; font-size: 18px !important; top: 8px !important; right: 10px !important; }
+    .leaflet-popup-close-button:hover { color: #d4a857 !important; }
+
+    .leaflet-popup-content {
+      margin: 14px 16px 14px 16px;
+      min-width: 230px;
+      max-width: 290px;
+    }
+
+    .popup-img-placeholder {
+      width: 100%;
+      height: 72px;
+      background: #16162a;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-style: italic;
+    }
+
+    .popup-img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background: #16162a;
+      display: block;
+    }
+
+    .popup-cat {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .popup-title {
+      font-size: 1.05rem;
+      color: #d4a857;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .popup-year {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.74rem;
+      color: #888;
+      margin-bottom: 9px;
+    }
+
+    .popup-demolished {
+      color: #e05555;
+      margin-left: 6px;
+    }
+
+    .popup-desc {
+      font-size: 0.78rem;
+      color: #b0a595;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .popup-architect {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div id="title">
+    URBAN LAYERS
+    <span>4D Historical San Francisco</span>
+  </div>
+
+  <div id="year-control">
+    <div id="year-label">Viewing year</div>
+    <span id="year-display">1950</span>
+    <input type="range" id="year-slider" min="1791" max="2000" value="1950" step="1">
+    <span id="year-range">1791 – 2000</span>
+  </div>
+
+  <div id="category-filters">
+    <span id="filters-label">Filter:</span>
+  </div>
+</div>
+
+<div id="map-container">
+  <div id="map"></div>
+
+  <div id="counter">
+    Showing <strong id="visible-count">—</strong> of <strong>12</strong> structures
+  </div>
+
+  <div id="legend">
+    <h4>LEGEND</h4>
+    <div class="legend-row">
+      <div class="legend-dot" style="background:#d4a857; box-shadow:0 0 4px #d4a85766;"></div>
+      Standing at this year
+    </div>
+    <div class="legend-row">
+      <div class="legend-dot" style="background:#e05555; box-shadow:0 0 4px #e0555566;"></div>
+      Later demolished
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA MODEL: { id, year, title, category, desc, lat, lng, architect, demolished, img }
+// demolished: null = still standing | number = year it was demolished
+// img: null until API integration; popup falls back to placeholder text
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RECORDS = [
+  {
+    id: "sf-001",
+    year: 1898,
+    title: "Ferry Building",
+    category: "civic",
+    desc: "Beaux-Arts transit hub and marketplace at the foot of Market Street. Its 245-foot clock tower survived the 1906 earthquake nearly intact, becoming a symbol of the city's resilience.",
+    lat: 37.7955, lng: -122.3937,
+    architect: "A. Page Brown",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-002",
+    year: 1915,
+    title: "San Francisco City Hall",
+    category: "civic",
+    desc: "Rebuilt after the 1906 earthquake, this Beaux-Arts masterpiece features a dome taller than the U.S. Capitol. Designed to project civic confidence after the disaster.",
+    lat: 37.7793, lng: -122.4193,
+    architect: "Arthur Brown Jr.",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-003",
+    year: 1972,
+    title: "Transamerica Pyramid",
+    category: "commercial",
+    desc: "Postmodern skyscraper that became the most recognizable feature of the SF skyline. Controversial at its 1972 opening, it is now a protected landmark.",
+    lat: 37.7952, lng: -122.4028,
+    architect: "William Pereira",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-004",
+    year: 1896,
+    title: "Sutro Baths",
+    category: "entertainment",
+    desc: "The world's largest indoor swimming complex in its day, holding over 1.6 million gallons in six saltwater pools. A marvel of Victorian engineering, destroyed by fire in 1966.",
+    lat: 37.7799, lng: -122.5133,
+    architect: "Adolph Sutro",
+    demolished: 1966,
+    img: null
+  },
+  {
+    id: "sf-005",
+    year: 1886,
+    title: "Haas-Lilienthal House",
+    category: "residential",
+    desc: "One of the few intact Victorian-era mansions in San Francisco. This Queen Anne–style home survived the 1906 earthquake and fire and is now a house museum.",
+    lat: 37.7875, lng: -122.4327,
+    architect: "Peter R. Schmidt",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-006",
+    year: 1959,
+    title: "Embarcadero Freeway",
+    category: "infrastructure",
+    desc: "Double-deck elevated freeway that bisected downtown from the waterfront. Long contested by preservationists, it was demolished after sustaining damage in the 1989 Loma Prieta earthquake.",
+    lat: 37.7956, lng: -122.3975,
+    architect: null,
+    demolished: 1991,
+    img: null
+  },
+  {
+    id: "sf-007",
+    year: 1915,
+    title: "Palace of Fine Arts",
+    category: "civic",
+    desc: "Designed for the 1915 Panama-Pacific International Exposition, this beloved Roman-classical rotunda was preserved permanently. The current concrete structure is a 1960s reconstruction.",
+    lat: 37.8029, lng: -122.4484,
+    architect: "Bernard Maybeck",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-008",
+    year: 1913,
+    title: "Spreckels Mansion",
+    category: "residential",
+    desc: "Lavish Beaux-Arts palace built for sugar heiress Alma de Bretteville Spreckels, inspired by the Palace of Versailles. Now a private residence, owned for many years by author Danielle Steel.",
+    lat: 37.7921, lng: -122.4444,
+    architect: "George Applegarth",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-009",
+    year: 1933,
+    title: "Coit Tower",
+    category: "civic",
+    desc: "Art Deco tower atop Telegraph Hill, built with funds bequeathed by Lillie Hitchcock Coit to beautify the city. Its interior New Deal murals depicting labor and society remain controversial.",
+    lat: 37.8024, lng: -122.4058,
+    architect: "Arthur Brown Jr.",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-010",
+    year: 1791,
+    title: "Mission Dolores",
+    category: "religious",
+    desc: "Oldest intact building in San Francisco, founded as Mission San Francisco de Asís. The adobe walls have withstood every earthquake since the Spanish colonial period.",
+    lat: 37.7652, lng: -122.4270,
+    architect: null,
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-011",
+    year: 1909,
+    title: "Cliff House",
+    category: "entertainment",
+    desc: "Third iteration of a Victorian pleasure resort perched on the cliffs above Ocean Beach. The current Adirondack-style building replaced a grand château that burned in 1907.",
+    lat: 37.7786, lng: -122.5134,
+    architect: "Reid Brothers",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-012",
+    year: 1866,
+    title: "Woodward's Gardens",
+    category: "entertainment",
+    desc: "San Francisco's first great amusement park, covering two city blocks between Mission and Valencia. Featured a zoo, aquarium, art gallery, and amphitheater before closing in 1891.",
+    lat: 37.7677, lng: -122.4181,
+    architect: null,
+    demolished: 1894,
+    img: null
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CATEGORIES = {
+  civic:          { color: "#5b9bd5", label: "Civic" },
+  commercial:     { color: "#7ec88a", label: "Commercial" },
+  residential:    { color: "#e8a44a", label: "Residential" },
+  infrastructure: { color: "#a782c3", label: "Infrastructure" },
+  entertainment:  { color: "#e07a7a", label: "Entertainment" },
+  religious:      { color: "#6ecfcf", label: "Religious" }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+let viewYear = 1950;
+let activeCategories = new Set(Object.keys(CATEGORIES));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAP INIT
+// ─────────────────────────────────────────────────────────────────────────────
+
+const map = L.map("map", {
+  center: [37.762, -122.440],
+  zoom: 13,
+  zoomControl: true
+});
+
+L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  {
+    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 19
+  }
+).addTo(map);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARKER HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function makeIcon(catColor, willBeDemolished) {
+  const stroke = willBeDemolished ? "#e05555" : catColor;
+  const fill   = willBeDemolished ? "rgba(224,85,85,0.2)" : catColor + "30";
+  const glow   = willBeDemolished ? "#e05555" : catColor;
+  return L.divIcon({
+    className: "",
+    html: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+      <circle cx="12" cy="12" r="4.5" fill="${stroke}" style="filter:drop-shadow(0 0 3px ${glow})"/>
+    </svg>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -16]
+  });
+}
+
+function buildPopup(r) {
+  const cat = CATEGORIES[r.category];
+  const demolishedTag = r.demolished
+    ? `<span class="popup-demolished">demolished ${r.demolished}</span>`
+    : "";
+  const architectLine = r.architect
+    ? `<div class="popup-architect">Architect: ${r.architect}</div>`
+    : "";
+  const imgBlock = r.img
+    ? `<img class="popup-img" src="${r.img}" alt="${r.title}" loading="lazy">`
+    : `<div class="popup-img-placeholder">Photo — API integration pending</div>`;
+
+  return `
+    ${imgBlock}
+    <div class="popup-cat" style="color:${cat.color}">${cat.label}</div>
+    <div class="popup-title">${r.title}</div>
+    <div class="popup-year">Built ${r.year}${demolishedTag}</div>
+    <div class="popup-desc">${r.desc}</div>
+    ${architectLine}
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER LOGIC
+// ─────────────────────────────────────────────────────────────────────────────
+
+function isVisible(r) {
+  if (!activeCategories.has(r.category)) return false;
+  if (r.year > viewYear) return false;                        // not yet built
+  if (r.demolished !== null && r.demolished <= viewYear) return false; // already gone
+  return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+const markersLayer = L.layerGroup().addTo(map);
+
+function render() {
+  markersLayer.clearLayers();
+  let count = 0;
+
+  RECORDS.forEach(r => {
+    if (!isVisible(r)) return;
+    count++;
+
+    const catColor = CATEGORIES[r.category].color;
+    // willBeDemolished: exists at viewYear but will eventually be torn down
+    const willBeDemolished = r.demolished !== null && r.demolished > viewYear;
+
+    const marker = L.marker([r.lat, r.lng], {
+      icon: makeIcon(catColor, willBeDemolished),
+      title: r.title
+    });
+
+    marker.bindPopup(buildPopup(r), { maxWidth: 320 });
+    markersLayer.addLayer(marker);
+  });
+
+  document.getElementById("visible-count").textContent = count;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YEAR SLIDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+const sliderEl  = document.getElementById("year-slider");
+const displayEl = document.getElementById("year-display");
+const MIN_YEAR  = parseInt(sliderEl.min, 10);
+const MAX_YEAR  = parseInt(sliderEl.max, 10);
+
+function updateSliderGradient() {
+  const pct = ((viewYear - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100;
+  sliderEl.style.setProperty("--pct", pct.toFixed(1) + "%");
+}
+
+sliderEl.addEventListener("input", () => {
+  viewYear = parseInt(sliderEl.value, 10);
+  displayEl.textContent = viewYear;
+  updateSliderGradient();
+  render();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY PILLS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const filtersEl = document.getElementById("category-filters");
+
+Object.entries(CATEGORIES).forEach(([key, { color, label }]) => {
+  const pill = document.createElement("button");
+  pill.className = "cat-pill active";
+  pill.textContent = label;
+  pill.dataset.cat = key;
+  pill.style.borderColor = color;
+  pill.style.backgroundColor = color + "28";
+  pill.style.color = color;
+
+  pill.addEventListener("click", () => {
+    if (activeCategories.has(key)) {
+      activeCategories.delete(key);
+      pill.classList.remove("active");
+    } else {
+      activeCategories.add(key);
+      pill.classList.add("active");
+    }
+    render();
+  });
+
+  filtersEl.appendChild(pill);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────────────────────
+
+updateSliderGradient();
+render();
+</script>
+</body>
+</html>
