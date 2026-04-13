@@ -555,144 +555,130 @@ const CATEGORIES = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LOC API — CONSTANTS
+// LOC IMAGE ENRICHMENT
+//
+// LoC is now a secondary source: it fills img_url gaps for records that have
+// no photo stored in Supabase. Records themselves come from Supabase.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const LOC_BASE    = "https://www.loc.gov/photos/";
-const YEAR_WINDOW = 10;   // ± years around slider value
-const DEBOUNCE_MS = 450;  // wait after slider stops moving before fetching
+const DEBOUNCE_MS = 300; // debounce for slider input and map pan/zoom
 
-// SF centroid used for all LOC records (API provides no coordinates)
-const SF_LAT = 37.7749;
-const SF_LNG = -122.4194;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOC API — CATEGORY CLASSIFIER
-//
-// Reads an array of LoC subject heading strings and maps them to one of five
-// semantic classes (civic / commerce / culture / industry / residence), then
-// translates to the nearest existing CATEGORIES key.
-// ─────────────────────────────────────────────────────────────────────────────
-
-const SUBJECT_RULES = [
-  // Each entry: [regex tested against joined subjects, raw class name]
-  // Order matters — more specific patterns first.
-  [/city.?hall|court.?house|government|municipal|post.?office|federal|public.?build|civic|capitol|library|school|university|fire.?station|police/i, "civic"],
-  [/church|cathedral|temple|synagogue|chapel|mission|convent|monastery/i,                                                                           "civic"],
-  [/theater|theatre|opera|museum|gallery|park|garden|recreation|amusement|fair|expo|festival|entertainment|stadium|arena|ballpark/i,                "culture"],
-  [/store|shop|market|bank|hotel|restaurant|saloon|office.?build|commercial|department.?store|warehouse|wharf|dock/i,                              "commerce"],
-  [/factory|factories|manufact|industry|industrial|mill|brewery|cannery|foundry|railroad|railway|bridge|transit|cable.?car|ferry|port|harbor|waterfront|sewer|utility/i, "industry"],
-  [/dwell|house|houses|home|homes|apartment|tenement|residential|neighborhood|cottage|flat|suburb/i,                                               "residence"],
-];
-
-// Maps the 5 raw classifier outputs → existing CATEGORIES keys
-const LOC_CAT_MAP = {
-  civic:    "civic",
-  culture:  "entertainment",
-  commerce: "commercial",
-  industry: "infrastructure",
-  residence:"residential",
-};
-
-function classifySubjects(subjects) {
-  const text = [].concat(subjects || []).join(" ");
-  for (const [pattern, raw] of SUBJECT_RULES) {
-    if (pattern.test(text)) return LOC_CAT_MAP[raw] || "civic";
-  }
-  return "civic"; // default when no subject heading matches
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOC API — FIELD MAPPING HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Parse the first 4-digit historical year from free-form LoC date strings
-// e.g. "ca. 1905", "1890-1910", "between 1900 and 1906"
-function parseLocYear(dateStr) {
-  const m = String(dateStr || "").match(/\b(1[5-9]\d{2}|20[012]\d)\b/);
-  return m ? parseInt(m[1], 10) : null;
-}
-
-// Deterministic lat/lng jitter from a string seed so that LOC records
-// (which carry no coordinates) scatter around the SF centroid rather than
-// all landing on the same pixel. Spread: ~±2 km in each axis.
-function jitterCoords(seed) {
-  let h = 5381;
-  for (let i = 0; i < seed.length; i++) {
-    h = Math.imul(h, 31) ^ seed.charCodeAt(i);
-  }
-  const lat = SF_LAT + (((h & 0xff) - 128) / 128) * 0.018;
-  const lng = SF_LNG + ((((h >>> 8) & 0xff) - 128) / 128) * 0.024;
-  return { lat, lng };
-}
-
-// Map a single LoC search result → our data model
-// Returns null for items missing a parseable year or title (skipped by caller)
-function mapLocItem(item, idx) {
-  // Stable ID from item URL ("/item/2017771068/") or generate a fallback
-  const urlMatch = String(item.url || "").match(/\/item\/([^/?#]+)/);
-  const id = "loc-" + (urlMatch ? urlMatch[1] : `${idx}-${Date.now()}`);
-
-  const year = parseLocYear(item.date);
-  if (!year) return null;
-
-  const title = (item.title || "").replace(/\s*[,/.\-–—]+\s*$/, "").trim();
-  if (!title) return null;
-
-  // Subject headings may appear as `subject` or `subject_headings`
-  const subjects = (item.subject || []).concat(item.subject_headings || []);
-  const category = classifySubjects(subjects);
-
-  // Description is sometimes a string, sometimes an array
-  const descRaw = Array.isArray(item.description)
-    ? item.description.join(" ")
-    : (item.description || "");
-  const desc = descRaw.slice(0, 300);
-
-  // Prefer medium JPG; fall back to small GIF thumbnail
-  const img = item.resources?.[0]?.medium
-           || item.resources?.[0]?.small
-           || null;
-
-  const { lat, lng } = jitterCoords(id);
-
-  return { id, year, title, category, desc, lat, lng,
-           architect: null, demolished: null, img };
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOC API — FETCH
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Builds the URL exactly as documented: literal `:` and `|` in the fa param,
-// avoiding URLSearchParams encoding that would corrupt the facet syntax.
-function buildLocUrl(year) {
-  const lo = Math.max(1700, year - YEAR_WINDOW);
-  const hi = Math.min(2000, year + YEAR_WINDOW);
-  return `${LOC_BASE}?q=san+francisco` +
+// Fetch a single LoC photo URL matching title + year (±5-year window).
+// Throws on AbortError so the caller (enrichImages) can detect cancellation.
+async function fetchLocImg(title, year, signal) {
+  const q  = encodeURIComponent(title.replace(/'/g, ""));
+  const lo = Math.max(1700, year - 5);
+  const hi = Math.min(2030, year + 5);
+  const url = `${LOC_BASE}?q=${q}` +
     `&fa=location:san+francisco|online-format:image` +
-    `&dates=${lo}/${hi}` +
-    `&fo=json&c=50&sp=1`;
+    `&dates=${lo}/${hi}&fo=json&c=3&sp=1`;
+  const res = await fetch(url, { signal }); // throws AbortError when cancelled
+  if (!res.ok) return null;
+  const data = await res.json();
+  const item = (data.results || [])[0];
+  return item?.resources?.[0]?.medium ?? item?.resources?.[0]?.small ?? null;
 }
 
-async function fetchLocRecords(year, signal) {
-  const res = await fetch(buildLocUrl(year), { signal });
-  if (!res.ok) throw new Error(`LOC HTTP ${res.status}`);
-  const data = await res.json();
-  return (data.results || [])
-    .map((item, i) => mapLocItem(item, i))
-    .filter(Boolean);
+// For every record without an img, fire a LoC lookup and update it in place.
+// Refreshes the Leaflet popup for that marker as each image arrives.
+// Returns the count of records that received a LoC image.
+async function enrichImages(recs, signal) {
+  let count = 0;
+  const jobs = recs
+    .filter(r => !r.img)
+    .map(async r => {
+      try {
+        const img = await fetchLocImg(r.title, r.year, signal);
+        if (!img) return;
+        r.img = img;
+        const entry = markerRegistry.get(r.id);
+        if (entry) entry.marker.setPopupContent(buildPopup(r));
+        count++;
+      } catch (e) {
+        if (e.name !== "AbortError") console.warn("[LoC img]", r.title, e.message);
+      }
+    });
+  await Promise.allSettled(jobs);
+  return count;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPABASE CLIENT
+//
+// Credentials are read from window globals so the app works without a build
+// step. Set these in a <script> before this file:
+//   window.SUPABASE_URL      = 'https://<ref>.supabase.co';
+//   window.SUPABASE_ANON_KEY = 'eyJ...';
+// If either is missing the app falls back to BASE_RECORDS silently.
+// ─────────────────────────────────────────────────────────────────────────────
+
+let _sbClient = null;
+
+async function getSupabaseClient() {
+  if (_sbClient) return _sbClient;
+  const url = window.SUPABASE_URL;
+  const key = window.SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    console.warn(
+      "[Urban Layers] window.SUPABASE_URL / window.SUPABASE_ANON_KEY not set. " +
+      "Falling back to seeded records."
+    );
+    return null;
+  }
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  _sbClient = createClient(url, key);
+  return _sbClient;
+}
+
+// Mirrors fetchRecordsByBBox from supabase-client.js, inlined here so the
+// frontend works without a build step (no bare import specifier resolution).
+async function fetchFromSupabase(bounds, yearRange) {
+  const client = await getSupabaseClient();
+  if (!client) return null; // credentials not configured
+
+  const { north, south, east, west } = bounds;
+  const { from, to } = yearRange;
+
+  const { data, error } = await client
+    .from("records")
+    .select("id, year, title, category, description, lat, lng, architect, demolished, img_url, source")
+    .eq("verified", true)
+    .gte("lat", south).lte("lat", north)
+    .gte("lng", west).lte("lng", east)
+    .lte("year", to)
+    .or(`demolished.is.null,demolished.gte.${from}`)
+    .order("year", { ascending: true });
+
+  if (error) throw new Error(`Supabase: ${error.message}`);
+
+  return (data ?? []).map(row => ({
+    id:         row.id,
+    year:       row.year,
+    title:      row.title,
+    category:   row.category,
+    desc:       row.description ?? "",
+    lat:        row.lat,
+    lng:        row.lng,
+    architect:  row.architect  ?? null,
+    demolished: row.demolished ?? null,
+    img:        row.img_url    ?? null,
+    source:     row.source,
+  }));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────────────────────────────────────
 
-let viewYear        = 1950;
+let viewYear         = 1950;
 let activeCategories = new Set(Object.keys(CATEGORIES));
-let records         = [...BASE_RECORDS]; // starts as seeded; replaced by API results
-let fetchController = null;              // AbortController for in-flight request
-let debounceTimer   = null;
+let records          = [...BASE_RECORDS]; // seeded fallback; replaced by Supabase results
+let debounceTimer    = null;
+let fetchGen         = 0;                 // generation counter — detects superseded fetches
+let imgAbort         = null;              // AbortController for in-flight LoC image enrichment
+let dbRecordCount    = BASE_RECORDS.length;
+let locImageCount    = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAP INIT
@@ -856,7 +842,7 @@ function render() {
   });
 
   document.getElementById("visible-count").textContent = normalCount;
-  document.getElementById("total-count").textContent   = records.length;
+  updateCounter();
 
   // Sync 3D layer whenever the 2D render runs
   if (threeMode && threeReady) { tUpdateMesh(); tRender(); }
@@ -872,28 +858,73 @@ function setLoading(on) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FETCH + UPDATE
-// Aborts any in-flight request before issuing a new one.
-// On success:  records = API results (falls back to BASE_RECORDS if empty)
-// On error:    records = BASE_RECORDS, warning logged to console
-// AbortError:  silently ignored — a newer request is already in flight
+// COUNTER UPDATE
+// Separated from render() so enrichImages() can refresh the count
+// after LoC images arrive without triggering a full marker re-render.
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function fetchAndMerge(year) {
-  if (fetchController) fetchController.abort();
-  fetchController = new AbortController();
+function updateCounter() {
+  const locSuffix = locImageCount > 0 ? ` · ${locImageCount} LoC img` : "";
+  document.getElementById("total-count").textContent = dbRecordCount + locSuffix;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FETCH + UPDATE
+//
+// Primary source: Supabase fetchRecordsByBBox (bbox + year filter).
+// Secondary:      LoC image enrichment for records with no img_url in Supabase.
+// Fallback:       BASE_RECORDS when Supabase is not configured or returns empty.
+//
+// Ordering is handled with a generation counter (fetchGen) rather than
+// AbortController because the Supabase JS client does not natively expose
+// the underlying fetch signal. LoC image fetches use a separate AbortController
+// (imgAbort) so they can be cancelled immediately when a new call arrives.
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function fetchData() {
+  const myGen = ++fetchGen;
+
+  // Cancel any in-flight LoC image enrichment from the previous call
+  if (imgAbort) { imgAbort.abort(); imgAbort = null; }
 
   setLoading(true);
   try {
-    const apiRecords = await fetchLocRecords(year, fetchController.signal);
-    records = apiRecords.length > 0 ? apiRecords : [...BASE_RECORDS];
+    const bnd = map.getBounds();
+    const supaRows = await fetchFromSupabase(
+      { north: bnd.getNorth(), south: bnd.getSouth(),
+        east:  bnd.getEast(),  west:  bnd.getWest() },
+      { from: MIN_YEAR, to: viewYear }
+    );
+
+    if (myGen !== fetchGen) return; // superseded — a newer call already ran
+
+    if (supaRows === null) {
+      // Supabase not configured — keep seeded fallback
+      records = [...BASE_RECORDS];
+    } else {
+      records = supaRows.length > 0 ? supaRows : [...BASE_RECORDS];
+    }
+
+    dbRecordCount = records.length;
+    locImageCount = 0;
+    setLoading(false);
+    render(); // show DB records immediately
+
+    // Enrich missing images from LoC — runs concurrently, updates popups as
+    // each result arrives; cancelled instantly if fetchData() is called again
+    imgAbort = new AbortController();
+    locImageCount = await enrichImages(records, imgAbort.signal);
+    if (myGen === fetchGen && locImageCount > 0) updateCounter();
+
   } catch (err) {
-    if (err.name === "AbortError") return; // superseded — leave loading on for next request
-    console.warn("[Urban Layers] LOC fetch failed; using seeded records.", err.message);
+    if (myGen !== fetchGen) return;
+    console.warn("[Urban Layers] Data fetch failed; using seeded records.", err.message);
     records = [...BASE_RECORDS];
+    dbRecordCount = records.length;
+    locImageCount = 0;
+    setLoading(false);
+    render();
   }
-  setLoading(false);
-  render();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -914,9 +945,15 @@ sliderEl.addEventListener("input", () => {
   viewYear = parseInt(sliderEl.value, 10);
   displayEl.textContent = viewYear;
   updateSliderGradient();
-  render();                                       // instant re-filter from current records
+  render();                          // instant re-filter from current in-memory records
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => fetchAndMerge(viewYear), DEBOUNCE_MS);
+  debounceTimer = setTimeout(fetchData, DEBOUNCE_MS);
+});
+
+// Re-query Supabase whenever the map viewport changes (new bbox = new records)
+map.on("moveend zoomend", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(fetchData, DEBOUNCE_MS);
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -953,8 +990,8 @@ Object.entries(CATEGORIES).forEach(([key, { color, label }]) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 updateSliderGradient();
-render();               // show seeded records immediately while API loads
-fetchAndMerge(viewYear); // then fetch live LOC data
+render();        // show seeded BASE_RECORDS immediately while Supabase connects
+fetchData();     // primary: Supabase bbox query; LoC fills img gaps for null img_url
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THREE.JS 3D LAYER
