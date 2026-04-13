@@ -300,6 +300,34 @@
       color: #666;
       font-style: italic;
     }
+
+    /* ── Loading shimmer ─────────────────────────────────────────────────── */
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212, 168, 87, 0.12) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.1s ease-in-out infinite;
+      pointer-events: none;
+      border-radius: inherit;
+    }
   </style>
 </head>
 <body>
@@ -326,7 +354,7 @@
   <div id="map"></div>
 
   <div id="counter">
-    Showing <strong id="visible-count">—</strong> of <strong>12</strong> structures
+    Showing <strong id="visible-count">—</strong> of <strong id="total-count">12</strong> structures
   </div>
 
   <div id="legend">
@@ -347,10 +375,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA MODEL: { id, year, title, category, desc, lat, lng, architect, demolished, img }
 // demolished: null = still standing | number = year it was demolished
-// img: null until API integration; popup falls back to placeholder text
+// BASE_RECORDS: seeded fallback used when the LOC API is unreachable
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RECORDS = [
+const BASE_RECORDS = [
   {
     id: "sf-001",
     year: 1898,
@@ -499,11 +527,144 @@ const CATEGORIES = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// LOC API — CONSTANTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LOC_BASE    = "https://www.loc.gov/photos/";
+const YEAR_WINDOW = 10;   // ± years around slider value
+const DEBOUNCE_MS = 450;  // wait after slider stops moving before fetching
+
+// SF centroid used for all LOC records (API provides no coordinates)
+const SF_LAT = 37.7749;
+const SF_LNG = -122.4194;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOC API — CATEGORY CLASSIFIER
+//
+// Reads an array of LoC subject heading strings and maps them to one of five
+// semantic classes (civic / commerce / culture / industry / residence), then
+// translates to the nearest existing CATEGORIES key.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SUBJECT_RULES = [
+  // Each entry: [regex tested against joined subjects, raw class name]
+  // Order matters — more specific patterns first.
+  [/city.?hall|court.?house|government|municipal|post.?office|federal|public.?build|civic|capitol|library|school|university|fire.?station|police/i, "civic"],
+  [/church|cathedral|temple|synagogue|chapel|mission|convent|monastery/i,                                                                           "civic"],
+  [/theater|theatre|opera|museum|gallery|park|garden|recreation|amusement|fair|expo|festival|entertainment|stadium|arena|ballpark/i,                "culture"],
+  [/store|shop|market|bank|hotel|restaurant|saloon|office.?build|commercial|department.?store|warehouse|wharf|dock/i,                              "commerce"],
+  [/factory|factories|manufact|industry|industrial|mill|brewery|cannery|foundry|railroad|railway|bridge|transit|cable.?car|ferry|port|harbor|waterfront|sewer|utility/i, "industry"],
+  [/dwell|house|houses|home|homes|apartment|tenement|residential|neighborhood|cottage|flat|suburb/i,                                               "residence"],
+];
+
+// Maps the 5 raw classifier outputs → existing CATEGORIES keys
+const LOC_CAT_MAP = {
+  civic:    "civic",
+  culture:  "entertainment",
+  commerce: "commercial",
+  industry: "infrastructure",
+  residence:"residential",
+};
+
+function classifySubjects(subjects) {
+  const text = [].concat(subjects || []).join(" ");
+  for (const [pattern, raw] of SUBJECT_RULES) {
+    if (pattern.test(text)) return LOC_CAT_MAP[raw] || "civic";
+  }
+  return "civic"; // default when no subject heading matches
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOC API — FIELD MAPPING HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Parse the first 4-digit historical year from free-form LoC date strings
+// e.g. "ca. 1905", "1890-1910", "between 1900 and 1906"
+function parseLocYear(dateStr) {
+  const m = String(dateStr || "").match(/\b(1[5-9]\d{2}|20[012]\d)\b/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// Deterministic lat/lng jitter from a string seed so that LOC records
+// (which carry no coordinates) scatter around the SF centroid rather than
+// all landing on the same pixel. Spread: ~±2 km in each axis.
+function jitterCoords(seed) {
+  let h = 5381;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h, 31) ^ seed.charCodeAt(i);
+  }
+  const lat = SF_LAT + (((h & 0xff) - 128) / 128) * 0.018;
+  const lng = SF_LNG + ((((h >>> 8) & 0xff) - 128) / 128) * 0.024;
+  return { lat, lng };
+}
+
+// Map a single LoC search result → our data model
+// Returns null for items missing a parseable year or title (skipped by caller)
+function mapLocItem(item, idx) {
+  // Stable ID from item URL ("/item/2017771068/") or generate a fallback
+  const urlMatch = String(item.url || "").match(/\/item\/([^/?#]+)/);
+  const id = "loc-" + (urlMatch ? urlMatch[1] : `${idx}-${Date.now()}`);
+
+  const year = parseLocYear(item.date);
+  if (!year) return null;
+
+  const title = (item.title || "").replace(/\s*[,/.\-–—]+\s*$/, "").trim();
+  if (!title) return null;
+
+  // Subject headings may appear as `subject` or `subject_headings`
+  const subjects = (item.subject || []).concat(item.subject_headings || []);
+  const category = classifySubjects(subjects);
+
+  // Description is sometimes a string, sometimes an array
+  const descRaw = Array.isArray(item.description)
+    ? item.description.join(" ")
+    : (item.description || "");
+  const desc = descRaw.slice(0, 300);
+
+  // Prefer medium JPG; fall back to small GIF thumbnail
+  const img = item.resources?.[0]?.medium
+           || item.resources?.[0]?.small
+           || null;
+
+  const { lat, lng } = jitterCoords(id);
+
+  return { id, year, title, category, desc, lat, lng,
+           architect: null, demolished: null, img };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOC API — FETCH
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Builds the URL exactly as documented: literal `:` and `|` in the fa param,
+// avoiding URLSearchParams encoding that would corrupt the facet syntax.
+function buildLocUrl(year) {
+  const lo = Math.max(1700, year - YEAR_WINDOW);
+  const hi = Math.min(2000, year + YEAR_WINDOW);
+  return `${LOC_BASE}?q=san+francisco` +
+    `&fa=location:san+francisco|online-format:image` +
+    `&dates=${lo}/${hi}` +
+    `&fo=json&c=50&sp=1`;
+}
+
+async function fetchLocRecords(year, signal) {
+  const res = await fetch(buildLocUrl(year), { signal });
+  if (!res.ok) throw new Error(`LOC HTTP ${res.status}`);
+  const data = await res.json();
+  return (data.results || [])
+    .map((item, i) => mapLocItem(item, i))
+    .filter(Boolean);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────────────────────────────────────
 
-let viewYear = 1950;
+let viewYear        = 1950;
 let activeCategories = new Set(Object.keys(CATEGORIES));
+let records         = [...BASE_RECORDS]; // starts as seeded; replaced by API results
+let fetchController = null;              // AbortController for in-flight request
+let debounceTimer   = null;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAP INIT
@@ -545,7 +706,7 @@ function makeIcon(catColor, willBeDemolished) {
 }
 
 function buildPopup(r) {
-  const cat = CATEGORIES[r.category];
+  const cat = CATEGORIES[r.category] || CATEGORIES.civic;
   const demolishedTag = r.demolished
     ? `<span class="popup-demolished">demolished ${r.demolished}</span>`
     : "";
@@ -554,7 +715,7 @@ function buildPopup(r) {
     : "";
   const imgBlock = r.img
     ? `<img class="popup-img" src="${r.img}" alt="${r.title}" loading="lazy">`
-    : `<div class="popup-img-placeholder">Photo — API integration pending</div>`;
+    : `<div class="popup-img-placeholder">Photo — Library of Congress</div>`;
 
   return `
     ${imgBlock}
@@ -572,8 +733,8 @@ function buildPopup(r) {
 
 function isVisible(r) {
   if (!activeCategories.has(r.category)) return false;
-  if (r.year > viewYear) return false;                        // not yet built
-  if (r.demolished !== null && r.demolished <= viewYear) return false; // already gone
+  if (r.year > viewYear) return false;                                       // not yet built
+  if (r.demolished !== null && r.demolished <= viewYear) return false;       // already gone
   return true;
 }
 
@@ -587,24 +748,57 @@ function render() {
   markersLayer.clearLayers();
   let count = 0;
 
-  RECORDS.forEach(r => {
+  records.forEach(r => {
     if (!isVisible(r)) return;
     count++;
 
-    const catColor = CATEGORIES[r.category].color;
-    // willBeDemolished: exists at viewYear but will eventually be torn down
+    const catColor = (CATEGORIES[r.category] || CATEGORIES.civic).color;
     const willBeDemolished = r.demolished !== null && r.demolished > viewYear;
 
     const marker = L.marker([r.lat, r.lng], {
       icon: makeIcon(catColor, willBeDemolished),
       title: r.title
     });
-
     marker.bindPopup(buildPopup(r), { maxWidth: 320 });
     markersLayer.addLayer(marker);
   });
 
   document.getElementById("visible-count").textContent = count;
+  document.getElementById("total-count").textContent   = records.length;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOADING STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+function setLoading(on) {
+  document.getElementById("counter").classList.toggle("loading", on);
+  if (on) document.getElementById("visible-count").textContent = "…";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FETCH + UPDATE
+// Aborts any in-flight request before issuing a new one.
+// On success:  records = API results (falls back to BASE_RECORDS if empty)
+// On error:    records = BASE_RECORDS, warning logged to console
+// AbortError:  silently ignored — a newer request is already in flight
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function fetchAndMerge(year) {
+  if (fetchController) fetchController.abort();
+  fetchController = new AbortController();
+
+  setLoading(true);
+  try {
+    const apiRecords = await fetchLocRecords(year, fetchController.signal);
+    records = apiRecords.length > 0 ? apiRecords : [...BASE_RECORDS];
+  } catch (err) {
+    if (err.name === "AbortError") return; // superseded — leave loading on for next request
+    console.warn("[Urban Layers] LOC fetch failed; using seeded records.", err.message);
+    records = [...BASE_RECORDS];
+  }
+  setLoading(false);
+  render();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -625,7 +819,9 @@ sliderEl.addEventListener("input", () => {
   viewYear = parseInt(sliderEl.value, 10);
   displayEl.textContent = viewYear;
   updateSliderGradient();
-  render();
+  render();                                       // instant re-filter from current records
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => fetchAndMerge(viewYear), DEBOUNCE_MS);
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -662,7 +858,8 @@ Object.entries(CATEGORIES).forEach(([key, { color, label }]) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 updateSliderGradient();
-render();
+render();               // show seeded records immediately while API loads
+fetchAndMerge(viewYear); // then fetch live LOC data
 </script>
 </body>
 </html>
