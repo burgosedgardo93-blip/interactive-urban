@@ -353,6 +353,279 @@
     }
     #toggle-3d:hover     { background: rgba(212,168,87,0.12); }
     #toggle-3d.active-3d { background: #d4a857; color: #0e0e1a; }
+
+    /* ── Submit a Record button ──────────────────────────────────────────── */
+
+    #submit-btn {
+      padding: 4px 14px;
+      border-radius: 12px;
+      border: 1px solid #d4a857;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-weight: bold;
+      cursor: pointer;
+      background: #d4a857;
+      color: #0e0e1a;
+      letter-spacing: 0.06em;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #submit-btn:hover { background: #c4982d; border-color: #c4982d; }
+
+    /* ── Contribution drawer ─────────────────────────────────────────────── */
+
+    #drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 18, 0.55);
+      z-index: 1050;
+    }
+    #drawer-backdrop.open { display: block; }
+
+    #drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 370px;
+      height: 100vh;
+      background: #0a0a16;
+      border-left: 1px solid #3a3020;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.28s ease;
+    }
+    #drawer.open { right: 0; }
+
+    #drawer-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #3a3020;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    #drawer-title {
+      font-size: 0.88rem;
+      color: #d4a857;
+      letter-spacing: 0.12em;
+    }
+
+    #drawer-close {
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+      font-family: 'Arial', sans-serif;
+    }
+    #drawer-close:hover { color: #d4a857; }
+
+    #drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #3a3020 transparent;
+    }
+    #drawer-body::-webkit-scrollbar { width: 4px; }
+    #drawer-body::-webkit-scrollbar-thumb { background: #3a3020; border-radius: 2px; }
+
+    /* ── Drawer form fields ──────────────────────────────────────────────── */
+
+    .drw-field { margin-bottom: 13px; }
+
+    .drw-field label {
+      display: block;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.64rem;
+      color: #777;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .drw-field label .req { color: #e05555; margin-left: 1px; }
+
+    .drw-field input,
+    .drw-field select,
+    .drw-field textarea {
+      width: 100%;
+      background: #16162a;
+      border: 1px solid #3a3020;
+      border-radius: 4px;
+      color: #e0d5c5;
+      font-family: 'Georgia', serif;
+      font-size: 0.83rem;
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .drw-field input:focus,
+    .drw-field select:focus,
+    .drw-field textarea:focus { border-color: #d4a857; }
+    .drw-field input.err, .drw-field select.err { border-color: #e05555; }
+    .drw-field textarea { resize: vertical; min-height: 68px; }
+    .drw-field select option { background: #0a0a16; color: #e0d5c5; }
+
+    /* Inline field error */
+    .drw-err {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.63rem;
+      color: #e05555;
+      margin-top: 4px;
+      display: none;
+    }
+    .drw-err.show { display: block; }
+
+    /* Two-column layout */
+    .drw-row { display: flex; gap: 10px; }
+    .drw-row > .drw-field { flex: 1; margin-bottom: 0; }
+
+    /* Demolished toggle switch */
+    .drw-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+    .drw-toggle-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.64rem;
+      color: #777;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .drw-toggle {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .drw-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .drw-toggle .drw-slider {
+      position: absolute;
+      inset: 0;
+      background: #2a2820;
+      border: 1px solid #3a3020;
+      border-radius: 10px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .drw-toggle .drw-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 2px;
+      top: 2px;
+      background: #555;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .drw-toggle input:checked + .drw-slider { background: #d4a857; border-color: #d4a857; }
+    .drw-toggle input:checked + .drw-slider::before {
+      transform: translateX(16px);
+      background: #0e0e1a;
+    }
+
+    /* Pick-on-map controls */
+    #pick-btn {
+      margin-top: 7px;
+      padding: 5px 11px;
+      border-radius: 4px;
+      border: 1px solid #3a3020;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #777;
+      background: transparent;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #pick-btn:hover, #pick-btn.picking { border-color: #d4a857; color: #d4a857; }
+
+    .pick-hint {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.63rem;
+      color: #d4a857;
+      margin-top: 5px;
+      display: none;
+    }
+    .pick-hint.show { display: block; }
+
+    /* Drawer footer */
+    #drawer-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #3a3020;
+      flex-shrink: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #submit-err {
+      width: 100%;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #e05555;
+      display: none;
+    }
+    #submit-err.show { display: block; }
+
+    #drawer-submit {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: 4px;
+      background: #d4a857;
+      color: #0e0e1a;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    #drawer-submit:hover:not(:disabled) { background: #c4982d; }
+    #drawer-submit:disabled { opacity: 0.45; cursor: default; }
+
+    #drawer-cancel {
+      padding: 9px 16px;
+      border-radius: 4px;
+      border: 1px solid #3a3020;
+      background: transparent;
+      color: #777;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #drawer-cancel:hover { border-color: #d4a857; color: #d4a857; }
+
+    /* Success state */
+    #drawer-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 48px 24px;
+      text-align: center;
+      height: 100%;
+    }
+    #drawer-success.show { display: flex; }
+    #drawer-success p {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      color: #b0a595;
+      line-height: 1.65;
+    }
   </style>
 </head>
 <body>
@@ -375,6 +648,7 @@
   </div>
 
   <button id="toggle-3d">3D Mode</button>
+  <button id="submit-btn">Submit a Record</button>
 </div>
 
 <div id="map-container">
@@ -397,6 +671,113 @@
     </div>
   </div>
 </div>
+
+<!-- ── Contribution Drawer ──────────────────────────────────────────────────── -->
+<div id="drawer-backdrop"></div>
+
+<div id="drawer">
+  <div id="drawer-header">
+    <span id="drawer-title">SUBMIT A RECORD</span>
+    <button id="drawer-close" title="Close">&#x2715;</button>
+  </div>
+
+  <div id="drawer-body">
+    <div id="drawer-form">
+
+      <!-- Title -->
+      <div class="drw-field">
+        <label for="f-title">Title <span class="req">*</span></label>
+        <input type="text" id="f-title" placeholder="e.g. Ferry Building">
+        <span class="drw-err" id="err-title">Title is required.</span>
+      </div>
+
+      <!-- Year + Category row -->
+      <div class="drw-row" style="margin-bottom:13px;">
+        <div class="drw-field">
+          <label for="f-year">Year <span class="req">*</span></label>
+          <input type="number" id="f-year" min="1800" max="2000" placeholder="1906">
+          <span class="drw-err" id="err-year">Year must be 1800–2000.</span>
+        </div>
+        <div class="drw-field">
+          <label for="f-cat">Category <span class="req">*</span></label>
+          <select id="f-cat">
+            <option value="">— select —</option>
+            <option value="civic">Civic</option>
+            <option value="commercial">Commercial</option>
+            <option value="residential">Residential</option>
+            <option value="infrastructure">Infrastructure</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="religious">Religious</option>
+          </select>
+          <span class="drw-err" id="err-cat">Category is required.</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="drw-field">
+        <label for="f-desc">Description</label>
+        <textarea id="f-desc" placeholder="Brief history of the building…"></textarea>
+      </div>
+
+      <!-- Location -->
+      <div class="drw-field">
+        <label>Location <span class="req">*</span></label>
+        <div style="display:flex;gap:10px;">
+          <input type="number" id="f-lat" step="any" placeholder="Lat e.g. 37.7749" style="flex:1;">
+          <input type="number" id="f-lng" step="any" placeholder="Lng e.g. −122.419" style="flex:1;">
+        </div>
+        <button type="button" id="pick-btn">Pick on map</button>
+        <span class="pick-hint" id="pick-hint">Click anywhere on the map to set the location.</span>
+        <span class="drw-err" id="err-loc">Latitude and longitude are required.</span>
+      </div>
+
+      <!-- Architect -->
+      <div class="drw-field">
+        <label for="f-arch">Architect</label>
+        <input type="text" id="f-arch" placeholder="e.g. Julia Morgan">
+      </div>
+
+      <!-- Demolished toggle -->
+      <div class="drw-toggle-row">
+        <span class="drw-toggle-label">Demolished</span>
+        <label class="drw-toggle">
+          <input type="checkbox" id="f-dem-toggle">
+          <span class="drw-slider"></span>
+        </label>
+      </div>
+
+      <!-- Demolished year (shown only when toggle is on) -->
+      <div class="drw-field" id="f-dem-wrap" style="display:none;">
+        <label for="f-dem-year">Demolished year</label>
+        <input type="number" id="f-dem-year" min="1800" max="2025" placeholder="e.g. 1966">
+      </div>
+
+      <!-- Image URL -->
+      <div class="drw-field">
+        <label for="f-img">Image URL (optional)</label>
+        <input type="url" id="f-img" placeholder="https://…">
+      </div>
+
+    </div><!-- /#drawer-form -->
+
+    <!-- Success state -->
+    <div id="drawer-success">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="27" stroke="#d4a857" stroke-width="2" fill="none"/>
+        <polyline points="16,28 24,36 40,20" stroke="#d4a857" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <p>Your record has been submitted for review.<br>Thank you for contributing to Urban Layers!</p>
+    </div>
+
+  </div><!-- /#drawer-body -->
+
+  <div id="drawer-footer">
+    <span id="submit-err"></span>
+    <button type="button" id="drawer-cancel">Cancel</button>
+    <button type="button" id="drawer-submit">Submit Record</button>
+  </div>
+</div><!-- /#drawer -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -992,6 +1373,229 @@ Object.entries(CATEGORIES).forEach(([key, { color, label }]) => {
 updateSliderGradient();
 render();        // show seeded BASE_RECORDS immediately while Supabase connects
 fetchData();     // primary: Supabase bbox query; LoC fills img gaps for null img_url
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMUNITY CONTRIBUTION DRAWER
+// ─────────────────────────────────────────────────────────────────────────────
+
+let pickingLocation = false;
+let pickMarker      = null;
+
+function openDrawer() {
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawer-backdrop").classList.add("open");
+}
+
+function closeDrawer() {
+  if (pickingLocation) exitPickMode();
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("drawer-backdrop").classList.remove("open");
+  setTimeout(resetDrawerForm, 300); // reset after slide-out animation
+}
+
+function resetDrawerForm() {
+  ["f-title","f-year","f-desc","f-lat","f-lng","f-arch","f-dem-year","f-img"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("f-cat").value = "";
+  document.getElementById("f-dem-toggle").checked = false;
+  document.getElementById("f-dem-wrap").style.display = "none";
+
+  document.querySelectorAll(".drw-err").forEach(el => el.classList.remove("show"));
+  document.querySelectorAll(".drw-field input.err, .drw-field select.err")
+    .forEach(el => el.classList.remove("err"));
+
+  const submitErr = document.getElementById("submit-err");
+  submitErr.classList.remove("show");
+  submitErr.textContent = "";
+
+  document.getElementById("drawer-form").style.display = "";
+  document.getElementById("drawer-success").classList.remove("show");
+  document.getElementById("drawer-submit").disabled = false;
+
+  if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
+}
+
+function enterPickMode() {
+  pickingLocation = true;
+  const btn = document.getElementById("pick-btn");
+  btn.classList.add("picking");
+  btn.textContent = "Cancel pick";
+  document.getElementById("pick-hint").classList.add("show");
+  // Let clicks through to the map
+  document.getElementById("drawer-backdrop").style.pointerEvents = "none";
+  map.once("click", onMapPick);
+}
+
+function exitPickMode() {
+  pickingLocation = false;
+  const btn = document.getElementById("pick-btn");
+  btn.classList.remove("picking");
+  btn.textContent = "Pick on map";
+  document.getElementById("pick-hint").classList.remove("show");
+  document.getElementById("drawer-backdrop").style.pointerEvents = "";
+  map.off("click", onMapPick);
+}
+
+function onMapPick(e) {
+  exitPickMode();
+  const { lat, lng } = e.latlng;
+  document.getElementById("f-lat").value = lat.toFixed(5);
+  document.getElementById("f-lng").value = lng.toFixed(5);
+
+  if (pickMarker) map.removeLayer(pickMarker);
+  pickMarker = L.circleMarker([lat, lng], {
+    radius: 7,
+    color: "#d4a857",
+    weight: 2,
+    fillColor: "#d4a857",
+    fillOpacity: 0.35
+  }).addTo(map);
+
+  document.getElementById("f-lat").classList.remove("err");
+  document.getElementById("f-lng").classList.remove("err");
+  document.getElementById("err-loc").classList.remove("show");
+}
+
+function validateForm() {
+  let valid = true;
+
+  // Title
+  const title = document.getElementById("f-title").value.trim();
+  if (!title) {
+    document.getElementById("f-title").classList.add("err");
+    document.getElementById("err-title").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-title").classList.remove("err");
+    document.getElementById("err-title").classList.remove("show");
+  }
+
+  // Year
+  const yearVal = parseInt(document.getElementById("f-year").value, 10);
+  if (!yearVal || yearVal < 1800 || yearVal > 2000) {
+    document.getElementById("f-year").classList.add("err");
+    document.getElementById("err-year").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-year").classList.remove("err");
+    document.getElementById("err-year").classList.remove("show");
+  }
+
+  // Category
+  const cat = document.getElementById("f-cat").value;
+  if (!cat) {
+    document.getElementById("f-cat").classList.add("err");
+    document.getElementById("err-cat").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-cat").classList.remove("err");
+    document.getElementById("err-cat").classList.remove("show");
+  }
+
+  // Location
+  const latVal = parseFloat(document.getElementById("f-lat").value);
+  const lngVal = parseFloat(document.getElementById("f-lng").value);
+  if (isNaN(latVal) || isNaN(lngVal)) {
+    document.getElementById("f-lat").classList.add("err");
+    document.getElementById("f-lng").classList.add("err");
+    document.getElementById("err-loc").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-lat").classList.remove("err");
+    document.getElementById("f-lng").classList.remove("err");
+    document.getElementById("err-loc").classList.remove("show");
+  }
+
+  return valid;
+}
+
+async function inlineSubmitContribution(record) {
+  const client = await getSupabaseClient();
+  if (!client) throw new Error("Supabase is not configured. Cannot submit.");
+
+  const { data: { user }, error: authError } = await client.auth.getUser();
+  if (authError || !user) {
+    throw new Error("You must be signed in to submit a contribution.");
+  }
+
+  const payload = {
+    year:           record.year,
+    title:          record.title,
+    category:       record.category,
+    description:    record.description  ?? null,
+    lat:            record.lat,
+    lng:            record.lng,
+    architect:      record.architect    ?? null,
+    demolished:     record.demolished   ?? null,
+    img_url:        record.img_url      ?? null,
+    source:         "community",
+    contributor_id: user.id,
+    status:         "pending",
+    verified:       false,
+  };
+
+  const { data, error } = await client
+    .from("contributions")
+    .insert(payload)
+    .select("id, status, created_at")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function handleDrawerSubmit() {
+  if (!validateForm()) return;
+
+  const submitBtn = document.getElementById("drawer-submit");
+  const submitErr = document.getElementById("submit-err");
+  submitBtn.disabled = true;
+  submitErr.classList.remove("show");
+  submitErr.textContent = "";
+
+  const demOn      = document.getElementById("f-dem-toggle").checked;
+  const demYearRaw = parseInt(document.getElementById("f-dem-year").value, 10);
+
+  const record = {
+    year:        parseInt(document.getElementById("f-year").value, 10),
+    title:       document.getElementById("f-title").value.trim(),
+    category:    document.getElementById("f-cat").value,
+    description: document.getElementById("f-desc").value.trim() || null,
+    lat:         parseFloat(document.getElementById("f-lat").value),
+    lng:         parseFloat(document.getElementById("f-lng").value),
+    architect:   document.getElementById("f-arch").value.trim() || null,
+    demolished:  demOn && !isNaN(demYearRaw) ? demYearRaw : null,
+    img_url:     document.getElementById("f-img").value.trim() || null,
+  };
+
+  try {
+    await inlineSubmitContribution(record);
+    document.getElementById("drawer-form").style.display = "none";
+    document.getElementById("drawer-success").classList.add("show");
+    setTimeout(closeDrawer, 2800);
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitErr.textContent = err.message || "Submission failed. Please try again.";
+    submitErr.classList.add("show");
+  }
+}
+
+// ── Drawer event listeners ────────────────────────────────────────────────────
+document.getElementById("submit-btn").addEventListener("click", openDrawer);
+document.getElementById("drawer-backdrop").addEventListener("click", closeDrawer);
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+document.getElementById("drawer-cancel").addEventListener("click", closeDrawer);
+document.getElementById("drawer-submit").addEventListener("click", handleDrawerSubmit);
+
+document.getElementById("pick-btn").addEventListener("click", () => {
+  if (pickingLocation) exitPickMode(); else enterPickMode();
+});
+
+document.getElementById("f-dem-toggle").addEventListener("change", function () {
+  document.getElementById("f-dem-wrap").style.display = this.checked ? "" : "none";
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THREE.JS 3D LAYER
