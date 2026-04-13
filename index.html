@@ -328,6 +328,12 @@
       pointer-events: none;
       border-radius: inherit;
     }
+
+    /* ── Marker transitions ──────────────────────────────────────────────── */
+
+    .leaflet-marker-icon {
+      transition: opacity 200ms ease;
+    }
   </style>
 </head>
 <body>
@@ -689,15 +695,16 @@ L.tileLayer(
 // MARKER HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-function makeIcon(catColor, willBeDemolished) {
-  const stroke = willBeDemolished ? "#e05555" : catColor;
-  const fill   = willBeDemolished ? "rgba(224,85,85,0.2)" : catColor + "30";
-  const glow   = willBeDemolished ? "#e05555" : catColor;
+// state: "normal" | "ghost" | "future"
+// Ghost markers get a dashed SVG border; element opacity is set separately.
+function makeIcon(catColor, state) {
+  const fill      = catColor + "30";
+  const dashAttr  = state === "ghost" ? ' stroke-dasharray="3 3"' : "";
   return L.divIcon({
     className: "",
     html: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
-      <circle cx="12" cy="12" r="4.5" fill="${stroke}" style="filter:drop-shadow(0 0 3px ${glow})"/>
+      <circle cx="12" cy="12" r="10" fill="${fill}" stroke="${catColor}" stroke-width="2"${dashAttr}/>
+      <circle cx="12" cy="12" r="4.5" fill="${catColor}" style="filter:drop-shadow(0 0 3px ${catColor})"/>
     </svg>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
@@ -728,42 +735,105 @@ function buildPopup(r) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FILTER LOGIC
+// TEMPORAL LAYER LOGIC
+//
+// Pure function — no side effects, fully unit-testable.
+// Returns one of three states for a record at a given slider year:
+//   "future"  — not yet built; hidden entirely
+//   "ghost"   — demolished before `year`; shown faded with dashed border
+//   "normal"  — standing at `year`; shown at full opacity
 // ─────────────────────────────────────────────────────────────────────────────
 
-function isVisible(r) {
-  if (!activeCategories.has(r.category)) return false;
-  if (r.year > viewYear) return false;                                       // not yet built
-  if (r.demolished !== null && r.demolished <= viewYear) return false;       // already gone
-  return true;
+function getMarkerState(r, year) {
+  if (r.year > year) return "future";
+  if (r.demolished !== null && r.demolished <= year) return "ghost";
+  return "normal";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RENDER
+//
+// Uses a persistent markerRegistry so existing Leaflet elements are updated
+// in-place rather than destroyed and recreated. This lets CSS opacity
+// transitions (200ms ease) run on state changes instead of markers popping.
+//
+// markerRegistry: Map<id, { marker: L.Marker, state: string }>
 // ─────────────────────────────────────────────────────────────────────────────
 
-const markersLayer = L.layerGroup().addTo(map);
+const markersLayer  = L.layerGroup().addTo(map);
+const markerRegistry = new Map(); // id → { marker, state }
+
+// Target CSS opacity for each temporal state
+const STATE_OPACITY = { normal: "1", ghost: "0.35", future: "0" };
+
+function applyOpacity(el, state, animate) {
+  if (!el) return;
+  el.style.transition    = animate ? "opacity 200ms ease" : "none";
+  el.style.opacity       = STATE_OPACITY[state];
+  el.style.pointerEvents = state === "future" ? "none" : "auto";
+}
 
 function render() {
-  markersLayer.clearLayers();
-  let count = 0;
+  // Build the set of IDs that should have markers (category-active records)
+  const activeIds = new Set(
+    records.filter(r => activeCategories.has(r.category)).map(r => r.id)
+  );
+
+  // ── Remove/fade-out stale markers ──────────────────────────────────────
+  for (const [id, entry] of markerRegistry) {
+    if (activeIds.has(id)) continue;
+    markerRegistry.delete(id);
+    const el = entry.marker.getElement();
+    if (el) {
+      el.style.transition    = "opacity 200ms ease";
+      el.style.opacity       = "0";
+      el.style.pointerEvents = "none";
+      const m = entry.marker;
+      setTimeout(() => markersLayer.removeLayer(m), 210);
+    } else {
+      markersLayer.removeLayer(entry.marker);
+    }
+  }
+
+  // ── Add/update markers ─────────────────────────────────────────────────
+  let normalCount = 0;
 
   records.forEach(r => {
-    if (!isVisible(r)) return;
-    count++;
+    if (!activeCategories.has(r.category)) return;
 
+    const state    = getMarkerState(r, viewYear);
     const catColor = (CATEGORIES[r.category] || CATEGORIES.civic).color;
-    const willBeDemolished = r.demolished !== null && r.demolished > viewYear;
 
-    const marker = L.marker([r.lat, r.lng], {
-      icon: makeIcon(catColor, willBeDemolished),
-      title: r.title
-    });
-    marker.bindPopup(buildPopup(r), { maxWidth: 320 });
-    markersLayer.addLayer(marker);
+    if (!markerRegistry.has(r.id)) {
+      // New marker: add to layer, fade in from transparent
+      const marker = L.marker([r.lat, r.lng], {
+        icon: makeIcon(catColor, state),
+        title: r.title
+      });
+      marker.bindPopup(buildPopup(r), { maxWidth: 320 });
+      markersLayer.addLayer(marker);
+
+      const el = marker.getElement();
+      if (el) {
+        applyOpacity(el, "future", false);           // start invisible (no transition)
+        requestAnimationFrame(() => applyOpacity(el, state, true)); // animate to target
+      }
+
+      markerRegistry.set(r.id, { marker, state });
+    } else {
+      // Existing marker: only update icon + opacity when state has changed
+      const entry = markerRegistry.get(r.id);
+      if (entry.state !== state) {
+        entry.marker.setIcon(makeIcon(catColor, state));
+        applyOpacity(entry.marker.getElement(), state, true);
+        entry.state = state;
+      }
+    }
+
+    if (state === "normal") normalCount++;
   });
 
-  document.getElementById("visible-count").textContent = count;
+  document.getElementById("visible-count").textContent = normalCount;
   document.getElementById("total-count").textContent   = records.length;
 }
 
