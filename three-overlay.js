@@ -46,6 +46,10 @@ const YEAR_HI   = 2000;
 const HEIGHT_LO = 0.008;  // Three.js world-space units (NDC fraction)
 const HEIGHT_HI = 0.055;
 
+// Scale factor: 1 metre of real building height → world-space NDC units.
+// Calibrated so a 35 m commercial tower ≈ HEIGHT_HI (0.055 NDC).
+const METERS_TO_NDC = 0.00157;
+
 // Camera tilt: position at (0, CAM_Y, CAM_Z) looking at origin gives
 //   atan(|CAM_Y| / CAM_Z) ≈ 23.6° from vertical → isometric depth feel.
 // Buildings of height h appear ≈ 0.40·h NDC units above their footprint.
@@ -118,11 +122,13 @@ export class ThreeOverlay {
    *
    * @param {object} record  Must have: lat, lng (numbers), year (integer),
    *                         category (string matching a CATEGORIES key).
-   * @param {{ ghost?: boolean }} [opts]
-   *   ghost: true → drawn translucent (demolished-but-visible state).
+   * @param {{ ghost?: boolean, heightM?: number|null }} [opts]
+   *   ghost:   true → drawn translucent (demolished-but-visible state).
+   *   heightM: real building height in metres from buildingHeightResolver;
+   *            null/undefined falls back to the year-based placeholder.
    */
-  addBuilding(record, { ghost = false } = {}) {
-    this._buildings.push({ record, ghost });
+  addBuilding(record, { ghost = false, heightM = null } = {}) {
+    this._buildings.push({ record, ghost, heightM });
   }
 
   /**
@@ -310,11 +316,14 @@ export class ThreeOverlay {
     const w = this._footprintWidth();
     let nc = 0, gc = 0;
 
-    for (const { record: r, ghost } of this._buildings) {
+    for (const { record: r, ghost, heightM } of this._buildings) {
       if (nc + gc >= MAX_INSTANCES) break;
 
       const { x, y } = this._project(r.lat, r.lng);
-      const h        = this._yearToHeight(r.year);
+      // Use real height when available; fall back to year-based placeholder.
+      const h = heightM != null
+        ? heightM * METERS_TO_NDC
+        : this._yearToHeight(r.year);
 
       // Centre the box at z = h/2 so its base rests at z = 0 (ground plane).
       this._dummy.position.set(x, y, h / 2);

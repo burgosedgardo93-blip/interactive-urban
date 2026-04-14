@@ -1035,7 +1035,7 @@ async function fetchFromSupabase(bounds, yearRange) {
 
   const { data, error } = await client
     .from("records")
-    .select("id, year, title, category, description, lat, lng, architect, demolished, img_url, source")
+    .select("id, year, title, category, description, lat, lng, architect, demolished, img_url, source, height_m")
     .eq("verified", true)
     .gte("lat", south).lte("lat", north)
     .gte("lng", west).lte("lng", east)
@@ -1057,6 +1057,7 @@ async function fetchFromSupabase(bounds, yearRange) {
     demolished: row.demolished ?? null,
     img:        row.img_url    ?? null,
     source:     row.source,
+    height_m:   row.height_m   ?? null,
   }));
 }
 
@@ -1070,6 +1071,8 @@ let records          = [...BASE_RECORDS]; // seeded fallback; replaced by Supaba
 let debounceTimer    = null;
 let fetchGen         = 0;                 // generation counter — detects superseded fetches
 let imgAbort         = null;              // AbortController for in-flight LoC image enrichment
+let heightAbort      = null;              // AbortController for in-flight Overpass height query
+let heightCache      = new Map();         // record.id → resolved height in metres
 let dbRecordCount    = BASE_RECORDS.length;
 let locImageCount    = 0;
 
@@ -1274,11 +1277,44 @@ function updateCounter() {
 // (imgAbort) so they can be cancelled immediately when a new call arrives.
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Resolve real building heights for the current records array.
+ * Runs concurrently with image enrichment after each fetchData() call.
+ * Priority chain: Supabase height_m → Overpass API → category heuristic.
+ *
+ * @param {number} gen  The fetchGen snapshot at call time; used to discard
+ *                      results that arrive after a newer fetch has started.
+ */
+async function refreshHeights(gen) {
+  const ctrl = new AbortController();
+  heightAbort = ctrl;
+
+  try {
+    const { resolveHeights } = await import("./buildingHeightResolver.js");
+    if (ctrl.signal.aborted || gen !== fetchGen) return;
+
+    const snapshot = [...records];  // capture list before any awaits
+    const resolved = await resolveHeights(snapshot, { signal: ctrl.signal });
+    if (ctrl.signal.aborted || gen !== fetchGen) return;
+
+    // Merge resolved heights; keep existing entries for records outside this batch.
+    for (const [id, h] of resolved) heightCache.set(id, h);
+
+    // Re-draw 3D overlay with real heights if it is currently active.
+    if (threeMode) overlaySync();
+
+  } catch (err) {
+    if (err.name === "AbortError") return;  // cancelled cleanly — not an error
+    console.warn("[Urban Layers] Height resolution failed:", err.message);
+  }
+}
+
 async function fetchData() {
   const myGen = ++fetchGen;
 
-  // Cancel any in-flight LoC image enrichment from the previous call
-  if (imgAbort) { imgAbort.abort(); imgAbort = null; }
+  // Cancel any in-flight LoC image enrichment or Overpass height query from the previous call
+  if (imgAbort)    { imgAbort.abort();    imgAbort    = null; }
+  if (heightAbort) { heightAbort.abort(); heightAbort = null; }
 
   setLoading(true);
   try {
@@ -1302,6 +1338,10 @@ async function fetchData() {
     locImageCount = 0;
     setLoading(false);
     render(); // show DB records immediately
+
+    // Resolve real building heights from Supabase field → Overpass → heuristic.
+    // Fires concurrently; when resolved, re-draws the 3D overlay with true heights.
+    refreshHeights(myGen);
 
     // Enrich missing images from LoC — runs concurrently, updates popups as
     // each result arrives; cancelled instantly if fetchData() is called again
@@ -1635,7 +1675,7 @@ function overlaySync() {
     if (!activeCategories.has(r.category)) continue;
     const state = getMarkerState(r, viewYear);
     if (state === "future") continue;
-    overlay.addBuilding(r, { ghost: state === "ghost" });
+    overlay.addBuilding(r, { ghost: state === "ghost", heightM: heightCache.get(r.id) ?? null });
   }
   overlay.render();
 }
