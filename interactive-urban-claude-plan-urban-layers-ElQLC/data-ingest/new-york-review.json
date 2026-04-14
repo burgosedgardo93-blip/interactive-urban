@@ -1,0 +1,2632 @@
+[
+  {
+    "id": "loc-98508572",
+    "year": 1873,
+    "title": "New York,",
+    "category": "entertainment",
+    "description": "Bird's-eye view of New York with Battery Park in the foreground and ships in the harbor.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": null,
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-98508851",
+    "year": 1873,
+    "title": "New York,",
+    "category": "entertainment",
+    "description": "Bird's-eye view of New York with Battery Park in the foreground and the Brooklyn Bridge on the right.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "schlegel, george",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-98508522",
+    "year": 1874,
+    "title": "New York",
+    "category": "entertainment",
+    "description": "Bird's-eye view of New York showing the waterfront, Brooklyn Bridge, with Battery Park and Governors Island in the foreground.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "bachmann, john",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-98508610",
+    "year": 1851,
+    "title": "New York",
+    "category": "civic",
+    "description": "Bird's-eye view of New York City with Battery Park in the foreground.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "kummer, julius hermann",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632359",
+    "year": 1980,
+    "title": "New York Stock Exchange, New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632356",
+    "year": 1980,
+    "title": "New York Stock Exchange, New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632358",
+    "year": 1980,
+    "title": "New York Stock Exchange, New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769401",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769402",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller. | Photo shows: Church Illuminati, #141, Temple of Luxor. Eric C. Phillips, undertaker (Source: son of Jack Allison, photographer, 2017)",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769403",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769404",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769405",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller. | Photo shows: street vendor of \"ices\" with girl (Source: son of Jack Allison, photographer, 2017)",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769408",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017854565",
+    "year": 1943,
+    "title": "New York, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017769400",
+    "year": 1938,
+    "title": "New York, New York",
+    "category": "infrastructure",
+    "description": "1 negative ; 2 1/4 x 2 1/4 inches or smaller. | People outside of Utopia Children's House.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "allison, jack",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017647741",
+    "year": 1860,
+    "title": "[Stereographs of New York City, New York]",
+    "category": "religious",
+    "description": "132 photographs : albumen prints on card mounts, 5 hand-colored ; mounts 9 x 18 cm or smaller (stereograph format) | Photographs show commercial, cultural, financial and religous buildings and street views, New York City, New York.  Primary subjects include churches; hotels; banks and exchanges; shipping docks and ferry terminals; ships and ferries in New York Harbor. Some specific places depicted: the Olympic Theater (2 views); New York Academy of Music; the Battery and Castle Garden, Union Square, Chatham Square and Madison Square; Grace Church and Trinity Church; Astor Department store; Everett House, Fifth Avenue Hotel and Lafarge House hotel (later the Southern Hotel); the Corn and Merchant exchanges; Bank of the Republic.  Also views of Columbia College Law School (3 cards), New York University (1 card) and Astor Library (1 card). One image shows Abraham Lincoln's funeral procession, April  1865. Street views primarily show Broadway and Fifth Avenue.  Five cards related to the visit of the Japanese Embassy to New York in 1860.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "stacy, george",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-98508521",
+    "year": 1873,
+    "title": "New York,",
+    "category": "entertainment",
+    "description": "1 print : lithograph, color ; 43 x 60.2 cm. (image with accompanying text) | Bird's-eye view of New York with Central Park in the foreground.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "schlegel, george",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-93500737",
+    "year": 1849,
+    "title": "New York",
+    "category": "civic",
+    "description": "1 print : lithograph. | Bird's-eye view of New York City, looking south.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "bachmann, john",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2005677641",
+    "year": 1860,
+    "title": "Stereographs of New York City, New York",
+    "category": "infrastructure",
+    "description": "30 photographic prints on stereo cards : stereograph, albumen ; 10 x 18 cm. or smaller. | Photographs from various publishers show buildings and streets in New York City, N.Y. Subjects include Union Trust Bank and a churchyard; the Field Building; views of and from the Brooklyn Bridge; Five Points; Cornelius Vanderbilt's Parlor and Library and a conservatory on Fifth Avenue; the Astor Library; Chatham Square; street cars; street posters; Trinity Church; the Post Office; the immigrant processing center, Castle Garden; the Academy of Music on Fourteenth Street; Columbia College; the Wall Street ferry house; the dining room at the Hotel Windsor; The Battery; the Vanderbilt Mansion; High Bridge; and the interior of Manhattan Market.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "e. & h.t. anthony (firm)",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-92512901",
+    "year": 1920,
+    "title": "New York",
+    "category": "commercial",
+    "description": "1 photographic print : gelatin silver, warmtone ; image 24.4 x 19.3 cm. on sheet 10 x 8 in. | Photograph shows light and shadows on buildings in New York City.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "sheeler, charles",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-98508526",
+    "year": 1874,
+    "title": "New York",
+    "category": "entertainment",
+    "description": "1 print : lithograph, color ; 56 x 81 cm. (image with accompanying text) | Bird's-eye view of New York showing the waterfront, Brooklyn Bridge, with Battery Park and Governors Island in the foreground.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "bachmann, john",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017723058",
+    "year": 1937,
+    "title": "Strike pickets, New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017723059",
+    "year": 1937,
+    "title": "Strike pickets, New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2024636195",
+    "year": 1873,
+    "title": "[New-York Tribune Building, Printing House Square, New York, New York]",
+    "category": "residential",
+    "description": "1 print : engraving ; sheet 35 x 30 cm",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011635207",
+    "year": 1980,
+    "title": "Park Avenue, New York, New York",
+    "category": "entertainment",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2024636196",
+    "year": 1873,
+    "title": "[New-York Tribune Building, Printing House Square, New York, New York]",
+    "category": "residential",
+    "description": "1 print : engraving ; sheet 35 x 30 cm",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017842857",
+    "year": 1943,
+    "title": "New York, New York. Italian violinist",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017842858",
+    "year": 1943,
+    "title": "New York, New York. Italian violinist",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851522",
+    "year": 1943,
+    "title": "New York, New York. Harlem newsboy",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851526",
+    "year": 1943,
+    "title": "New York, New York. Harlem newsboy",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2024636197",
+    "year": 1876,
+    "title": "[New-York Tribune Building, Printing House Square, New York, New York]",
+    "category": "residential",
+    "description": "1 photograph : photolithograph ; sheet 35 x 30 cm",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017842866",
+    "year": 1943,
+    "title": "New York, New York. Italian violinist",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017842867",
+    "year": 1943,
+    "title": "New York, New York. Italian violinist",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2024635784",
+    "year": 1972,
+    "title": "New York",
+    "category": "civic",
+    "description": "1 photograph : gelatin silver print ; sheet 27.7 x 35.5 cm (11 x 14 format) | Photograph shows a well-dressed woman in vintage clothing on the street with long-haired young men on bicycles, automobiles, and commuters, New York.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "strick, david",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011631201",
+    "year": 1980,
+    "title": "Park Avenue, New York, New York",
+    "category": "entertainment",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2016810668",
+    "year": 1900,
+    "title": "[New York skyline from New Jersey, New York]",
+    "category": "civic",
+    "description": "1 negative : glass ; 8 x 10 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "detroit publishing co.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2016810667",
+    "year": 1900,
+    "title": "[New York skyline from New Jersey, New York]",
+    "category": "civic",
+    "description": "3 negatives : glass ; 8 x 10 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "detroit publishing co",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-93506587",
+    "year": 1930,
+    "title": "New York skyscrapers ...",
+    "category": "infrastructure",
+    "description": "1 photographic print. | New York City skyline from waterfront.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": null,
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011635119",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851575",
+    "year": 1943,
+    "title": "New York, New York. A Harlem resident",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851609",
+    "year": 1943,
+    "title": "New York, New York. Barrels of codfish",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851638",
+    "year": 1943,
+    "title": "New York, New York. Barrels of codfish",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017835471",
+    "year": 1942,
+    "title": "New York, New York. Pennsylvania railroad station",
+    "category": "infrastructure",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851519",
+    "year": 1943,
+    "title": "New York, New York. Harlem apartment house",
+    "category": "residential",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851520",
+    "year": 1943,
+    "title": "New York, New York. Harlem apartment house",
+    "category": "residential",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017727519",
+    "year": 1941,
+    "title": "Children playing, New York City, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017727523",
+    "year": 1941,
+    "title": "Children playing, New York City, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017727527",
+    "year": 1941,
+    "title": "Children playing, New York City, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017727529",
+    "year": 1941,
+    "title": "Children playing, New York City, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632578",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632579",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632584",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632586",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632587",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632589",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632591",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2020736829",
+    "year": 1970,
+    "title": "[Fire, New York Harbor, New York City]",
+    "category": "infrastructure",
+    "description": "1 photograph : color transparency ; 35mm (slide format)",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gotfryd, bernard",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2020736830",
+    "year": 1970,
+    "title": "[Fire, New York Harbor, New York City]",
+    "category": "infrastructure",
+    "description": "1 photograph : color transparency ; 35mm (slide format)",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gotfryd, bernard",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632585",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632590",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017851576",
+    "year": 1943,
+    "title": "New York, New York. A Harlem resident",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "parks, gordon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017835470",
+    "year": 1942,
+    "title": "New York, New York. Pennsylvania railroad station",
+    "category": "infrastructure",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "collins, marjory",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632577",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018735402",
+    "year": 1939,
+    "title": "New York montage. Relief, New York montage",
+    "category": "civic",
+    "description": "1 negative : safety ; 5x7 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gottscho-schleisner, inc",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018735400",
+    "year": 1939,
+    "title": "New York montage. Relief, New York montage",
+    "category": "civic",
+    "description": "1 negative : safety ; 5x7 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gottscho-schleisner, inc",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018735401",
+    "year": 1939,
+    "title": "New York montage. Relief, New York montage",
+    "category": "civic",
+    "description": "1 negative : safety ; 5x7 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gottscho-schleisner, inc",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790387",
+    "year": 1938,
+    "title": "New York, New York. East 63rd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790388",
+    "year": 1938,
+    "title": "New York, New York. East 63rd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790406",
+    "year": 1938,
+    "title": "New York, New York. East 63rd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790397",
+    "year": 1938,
+    "title": "New York, New York. East 62nd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775072",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775074",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775077",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775078",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775079",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775081",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775082",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775083",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775084",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775092",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775093",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775094",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775095",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775096",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775097",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775098",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775100",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790391",
+    "year": 1938,
+    "title": "New York, New York. East 62nd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790394",
+    "year": 1938,
+    "title": "New York, New York. East 63rd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790400",
+    "year": 1938,
+    "title": "New York, New York. East 62nd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790395",
+    "year": 1938,
+    "title": "New York, New York. East 63rd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017790407",
+    "year": 1938,
+    "title": "New York, New York. East 62nd Street",
+    "category": "infrastructure",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "dick, sheldon",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011633024",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632100",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632053",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632054",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632055",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632056",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632429",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632430",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632431",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632434",
+    "year": 1980,
+    "title": "Aerial view of New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017764828",
+    "year": 1941,
+    "title": "New York, New York. Washington Square Arch",
+    "category": "civic",
+    "description": "1 negative : safety ; 3 1/4 x 4 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rosskam, edwin",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011632952",
+    "year": 1980,
+    "title": "World Trade Center, New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018751232",
+    "year": 1939,
+    "title": "New York montage Relief, New York montage",
+    "category": "civic",
+    "description": "1 negative : safety ; 5x7 in.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "gottscho, samuel h. (samuel herman)",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017775085",
+    "year": 1941,
+    "title": "Merchant seaman. New York City, New York",
+    "category": "civic",
+    "description": "1 transparency : safety ; 4 x 5 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017764820",
+    "year": 1941,
+    "title": "New York, New York. Washington Square arch",
+    "category": "civic",
+    "description": "1 transparency : safety ; 4 x 5 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rosskam, edwin",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018675788",
+    "year": 1913,
+    "title": "[Newsstand].  Location: [New York, New York (State)]",
+    "category": "civic",
+    "description": "1 photographic print.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hine, lewis wickes",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018675789",
+    "year": 1913,
+    "title": "Newsstand.  Location: [New York], New York (State)",
+    "category": "civic",
+    "description": "1 photographic print.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hine, lewis wickes",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2011630654",
+    "year": 1980,
+    "title": "World Trade Center, New York, New York",
+    "category": "civic",
+    "description": "1 transparency : color ; 4 x 5 in. or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "highsmith, carol m.",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2015647624",
+    "year": 1932,
+    "title": "New York skyscrapers",
+    "category": "infrastructure",
+    "description": "1 photograph : gelatin silver print ; sheet 21 x 26 cm (8 x 10 format) | Photograph shows New York City piers and skyscrapers from across the Hudson River.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "underhill, irving",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2022651979",
+    "year": 1828,
+    "title": "New York",
+    "category": "infrastructure",
+    "description": "1 print : steel engraving ; sheet 22 x 27.4 cm. | Print shows \"view of the New York Harbor from the south, looking across to Manhattan. Castle Williams on Governors Island is visible in the foreground. Countless church towers are visible in the background while many small boats can be seen sailing in the water.\" (source: https://www.geographicus.com/P/AntiqueMap/newyork-maltebrun-1828)",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "smith, john rubens",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2020636740",
+    "year": 1959,
+    "title": "[New York cityscape]",
+    "category": "commercial",
+    "description": "1 photograph : gelatin silver print ; sheet 26 x 21 cm (8 x 10 in. format) | Photograph shows a view of New York City, with the Chrysler Building visible to the right.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rizzuto, angelo",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2018674800",
+    "year": 1913,
+    "title": "Newsstand.  Location: New York, New York (State)",
+    "category": "civic",
+    "description": "1 photographic print.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hine, lewis wickes",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017834633",
+    "year": 1942,
+    "title": "New York(?), New York. Negro taxi driver",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "fenn, albert",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017834630",
+    "year": 1942,
+    "title": "New York(?), New York. Negro taxi driver",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "fenn, albert",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017834631",
+    "year": 1942,
+    "title": "New York(?), New York. Negro taxi driver",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 2 1/4 x 2 1/4 inches or smaller.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "fenn, albert",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017706439",
+    "year": 1978,
+    "title": "New York Store, Lake Huntington, New York",
+    "category": "commercial",
+    "description": "1 photograph : color transparency ; 35 mm (slide format).",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "margolies, john",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017706440",
+    "year": 1978,
+    "title": "New York Store, Lake Huntington, New York",
+    "category": "commercial",
+    "description": "1 photograph : color transparency ; 35 mm (slide format).",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "margolies, john",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2020636217",
+    "year": 1956,
+    "title": "[New York cityscape]",
+    "category": "civic",
+    "description": "1 photograph : gelatin silver print ; sheet 21 x 26 cm (8 x 10 in. format) | Photograph shows a view of New York City from above. Smokestacks and an overpass reading \"Port Authority Bus Terminal\" visible.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rizzuto, angelo",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2016650316",
+    "year": 1866,
+    "title": "[Museum of History, Antiquities, and Art, New-York Historical Society, The Arsenal, Central Park, New York, New York. Exterior]",
+    "category": "entertainment",
+    "description": "1 drawing : brown wash on paper ; sheet 51 x 68 cm | Architectural drawing shows design for New York Historical Society building as section.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2016650317",
+    "year": 1866,
+    "title": "[Museum of History, Antiquities, and Art, New-York Historical Society, The Arsenal, Central Park, New York, New York. Exterior]",
+    "category": "entertainment",
+    "description": "1 drawing : brown wash on paper ; sheet 51 x 68 cm | Architectural drawing shows design for New York Historical Society building as elevation.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017723035",
+    "year": 1937,
+    "title": "Employment agency, Sixth Avenue, New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017723037",
+    "year": 1937,
+    "title": "Employment agency, Sixth Avenue, New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2017723038",
+    "year": 1937,
+    "title": "Employment agency, Sixth Avenue, New York, New York",
+    "category": "civic",
+    "description": "1 negative : nitrate ; 35 mm.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "rothstein, arthur",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "loc-2016650315",
+    "year": 1860,
+    "title": "[Museum of History, Antiquities, and Art, New-York Historical Society, The Arsenal, Central Park, New York, New York. Exterior]",
+    "category": "entertainment",
+    "description": "1 drawing : brown wash on paper ; sheet 51 x 68 cm | Architectural drawing shows design for New York Historical Society building as perspective projection.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "hunt, richard morris",
+    "demolished": null,
+    "img_url": null,
+    "source": "loc",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "dpla-8d3b37a3bfaf89a0aa7b4bd8c94f37eb",
+    "year": null,
+    "title": "Carpet Design: Still Life with Musical Instruments, Radio City Music Hall, New York, NY",
+    "category": "entertainment",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Ruth Reeves, (American, 1892–1966)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-0d8eb2549f90f3bd2a6a56870ce4d431",
+    "year": null,
+    "title": "Design for Bathroom Interior, Frederick B. Patterson Apartment, 435 East 52nd Street, New York, NY",
+    "category": "infrastructure",
+    "description": "Design for bathroom interior for the Frederick B. Patterson apartment at 435 East 52nd Street, New York, NY. Interior perspective shows built-in brown tub at left below exoticized figurative artwork (or painted tile?) and soffit with tubular lighting. Perpendicular, brown sink with streamlined pedestal situated between two towel rods (with warmers?) below mirror with glass shelving and recess just behind sink. Floor is black-brown and covered with white shag rug; a low white vanity stool positioned at lower left. Brown marble walls.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey, (American, 1894–1989)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-2c8762c19df0135b7116b0daa4abef2f",
+    "year": null,
+    "title": "Subway Posters Perform",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "E. McKnight Kauffer, American, 1890–1954",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-0db02b6adf35ff1bd3084887ca53e510",
+    "year": null,
+    "title": "Trade card for The Singer Manufacturing Co., sewing machines, New York, New York, 1898",
+    "category": "commercial",
+    "description": "Purchased from Greg Smart, 2000.",
+    "lat": 40.7,
+    "lng": -74,
+    "architect": null,
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-800cfacf3206117d798ebc7f43dfccd5",
+    "year": null,
+    "title": "Design for a Book Cover, \"Foundations of National Power\"",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "E. McKnight Kauffer, American, 1890–1954",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-866d679a8b61f7f8fdd1ee24bf8bce12",
+    "year": null,
+    "title": "Design for Prefabricated House",
+    "category": "residential",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey Associates, New York, New York, USA",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-0a9ba990f759dea06c0d56eaa48cf9ba",
+    "year": null,
+    "title": "Marbalia",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Laverne International, Ltd., 1942–1964",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-b84c440412cfcb83c09134b691d1113a",
+    "year": null,
+    "title": "Armchair, Upholstered",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey, (American, 1894–1989)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range",
+      "duplicate_title_within_100m"
+    ]
+  },
+  {
+    "id": "dpla-573908fca9cbaad520985ea66ca8fe23",
+    "year": null,
+    "title": "Delphos",
+    "category": "civic",
+    "description": "Sleeveless Delphos dress in seafoam green pleated silk, with drawstrings to gather at the shoulder and Murano glass beads down the side seams. Matching silk velvet three-quarter length coat stenciled in gold with a Persian design of a cluster of carnations.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Mariano Fortuny, (Spanish, active Italy, 1871–1949)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-ddba73ee324f3470f71c487c1c3def9a",
+    "year": null,
+    "title": "Benjamin Tredwell Onderdonk",
+    "category": "infrastructure",
+    "description": null,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Auguste Edouart, 1788 - 1861",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-b2c40746cf37db84e81f35ef9e956fa7",
+    "year": null,
+    "title": "Joseph Jefferson",
+    "category": "infrastructure",
+    "description": null,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Napoleon Sarony, 9 Mar 1821 - 9 Nov 1896",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-1b9793a5915ad75bc11a169e2f29310a",
+    "year": null,
+    "title": "Charlie Chaplin",
+    "category": "infrastructure",
+    "description": null,
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Edward Jean Steichen, 27 Mar 1879 - 25 Mar 1973",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-5c7c5cd1a69417d45552122f3a463e5b",
+    "year": null,
+    "title": "Design Showing Construction of Prefabricated Structure",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey Associates, New York, New York, USA",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-e2e7add6868cc8a92dd102ebe530cf57",
+    "year": null,
+    "title": "R. Buckminster Fuller, Makers of Contemporary Architecture Series",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Elaine Lustig Cohen, American, 1927–2016",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-a3c2030f0ac7d2b107dea9f0d9ffb2f9",
+    "year": null,
+    "title": "A Subway Poster Pulls",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "E. McKnight Kauffer, American, 1890–1954",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-be76215976bf3d6293d133ff01e0af30",
+    "year": null,
+    "title": "The New Architecture of Europe",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Elaine Lustig Cohen, American, 1927–2016",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-7e2dd831569c467e7eb211ddcec26656",
+    "year": null,
+    "title": "End Table",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey, (American, 1894–1989)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-2a534e148174d309edde846e1b48d3f7",
+    "year": null,
+    "title": "August 1970",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Russell & Hinrichs, New York, New York, USA",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-51bf23269366ca1cfc55a9a8920b73bc",
+    "year": null,
+    "title": "Pages from Electronics—A New Science for a New World",
+    "category": "civic",
+    "description": "Printed bifoliate pages from General Electric Company's 1942 booklet on electronics, “Electronics—A New Science for a New World.” Recto: Page 6 of the booklet. Design features black printed text at left and illustrations of 17th- and 18th-century science experiments by Otto von Guericke and Luigi Galvani at right. Captions printed in black accompany the images, and the text, “FIRST COMES,” is printed in black at center right. Verso: Design featuring a magnet at upper left, with some nails attached to its end and other loose nails nearby. An illustration of an experiment by Benjamin Franklin involving drawing electricity from clouds appears at center; a white kite in a dark, cloudy sky with lightning is attached to a black string with a black key at the end. A black and white photographic reproduction of Charles P. Steinmetz appears at lower right. Captions are printed in black alongside the images, and the text, “ELECTRICITY” is printed in black at left center. Left interior page features a black and white photographic reproduction of a group of scientists, including J.J. Thomson, the discoverer of the electron, at lower right. Red and blue atomic symbols appear above to illustrate the electron. A caption is printed in black to the left of the scientists, and the text “ENTER THE ELECTRON” is printed in black at center left. Interior right page features a black and white photographic reproduction of a General Electric research scientist at lower right, reproductions of scientific illustrations by Galileo and Francois-Louis Bruel at upper left and upper right, and image captions printed in black. The background is white and light blue, with the blue area gradually fading into white.",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Herbert Bayer, (American, born Austria, active Germany and USA, 1900–1985)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range"
+    ]
+  },
+  {
+    "id": "dpla-74f4ceb1e5253466ad8c5a8905929e13",
+    "year": null,
+    "title": "Armchair, Upholstered",
+    "category": "civic",
+    "description": "Research in Progress",
+    "lat": 40.7128,
+    "lng": -74.006,
+    "architect": "Donald Deskey, (American, 1894–1989)",
+    "demolished": null,
+    "img_url": null,
+    "source": "dpla",
+    "city": "New York",
+    "verified": true,
+    "validation_flags": [
+      "year_out_of_range",
+      "duplicate_title_within_100m"
+    ]
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "urban-layers-monorepo",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "workspaces": [
+    "urban-layers-mobile",
+    "packages/*"
+  ]
+}
