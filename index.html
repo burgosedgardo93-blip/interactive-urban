@@ -8,6 +8,18 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Category colour palette ─────────────────────────────────────────────
+       Single source of truth. Consumed by JS (CATEGORIES object), the
+       category pill components, and ThreeOverlay via getComputedStyle.   */
+    :root {
+      --color-civic:          #5b9bd5;
+      --color-commercial:     #7ec88a;
+      --color-residential:    #e8a44a;
+      --color-infrastructure: #a782c3;
+      --color-entertainment:  #e07a7a;
+      --color-religious:      #6ecfcf;
+    }
+
     body {
       font-family: 'Georgia', serif;
       background: #0e0e1a;
@@ -653,7 +665,7 @@
 
 <div id="map-container">
   <div id="map"></div>
-  <canvas id="three-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:400;display:none;"></canvas>
+  <!-- Three.js canvas is created and owned by ThreeOverlay (three-overlay.js) -->
 
   <div id="counter">
     Showing <strong id="visible-count">—</strong> of <strong id="total-count">12</strong> structures
@@ -1225,8 +1237,8 @@ function render() {
   document.getElementById("visible-count").textContent = normalCount;
   updateCounter();
 
-  // Sync 3D layer whenever the 2D render runs
-  if (threeMode && threeReady) { tUpdateMesh(); tRender(); }
+  // Sync 3D overlay whenever the 2D render runs
+  if (threeMode) overlaySync();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1598,187 +1610,62 @@ document.getElementById("f-dem-toggle").addEventListener("change", function () {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// THREE.JS 3D LAYER
+// THREE.JS 3D LAYER  — wiring for ThreeOverlay (three-overlay.js)
 //
-// Loaded lazily on first 3D activation via dynamic import() so it does not
-// delay the initial 2D map load. Runs in the same script scope, giving it
-// direct access to map, records, viewYear, CATEGORIES, getMarkerState, and
-// activeCategories without any global pollution.
-//
-// Rendering strategy:
-//   • OrthographicCamera tilted ~23° from vertical → isometric depth effect
-//   • Two InstancedMesh instances (normal + ghost) → one draw call per state
-//   • Buildings projected via map.latLngToContainerPoint for perfect alignment
-//   • Box height scales with zoom level (doubles per zoom step)
+// ThreeOverlay is a self-contained ES module. It owns its canvas, renderer,
+// scene, camera, and InstancedMesh instances, and listens to Leaflet viewport
+// events internally. Index.html is responsible only for:
+//   1. Importing the class lazily on first 3D activation.
+//   2. Calling overlaySync() whenever records / year / filters change so the
+//      overlay's building list stays in sync with the 2D marker state.
 // ─────────────────────────────────────────────────────────────────────────────
 
-let threeMode  = false;
-let threeReady = false;
-let tRenderer, tScene, tCamera, tMeshNormal, tMeshGhost, tDummy, tColor;
+let threeMode = false;
+let overlay   = null;  // ThreeOverlay — created once, reused on subsequent toggles
 
-async function initThree() {
-  if (threeReady) return;
-
-  const THREE  = await import("https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js");
-  const canvas = document.getElementById("three-canvas");
-  const sz     = map.getSize();
-  const asp    = sz.x / sz.y;
-
-  // ── Renderer ────────────────────────────────────────────────────────────
-  tRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  tRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  tRenderer.setSize(sz.x, sz.y, false);
-
-  // ── Scene & shared helpers ───────────────────────────────────────────────
-  tScene = new THREE.Scene();
-  tDummy = new THREE.Object3D();
-  tColor = new THREE.Color();
-
-  // Warm ambient fill + directional light from upper-left to reveal box faces
-  tScene.add(new THREE.AmbientLight(0xffeedd, 0.5));
-  const dir = new THREE.DirectionalLight(0xffd080, 1.0);
-  dir.position.set(-0.6, -0.8, 1.5);
-  tScene.add(dir);
-
-  // ── Camera — orthographic with ~23° tilt for isometric building depth ────
-  // Camera at (0, -0.4, 0.915): atan(0.4 / 0.915) ≈ 23.6° from vertical.
-  // A building of height h appears h·sin(23°) ≈ 0.39h NDC units "above"
-  // its map footprint, giving visible tower depth without breaking alignment.
-  tCamera = new THREE.OrthographicCamera(-asp, asp, 1, -1, -20, 20);
-  tCamera.position.set(0, -0.4, 0.915);
-  tCamera.lookAt(0, 0, 0);
-
-  // ── Two InstancedMesh instances: one per temporal state ──────────────────
-  // Separate meshes let us set material.opacity per-state without a custom
-  // shader. renderOrder ensures ghost (transparent) draws after normal.
-  const MAX = 1000;
-  const geo = new THREE.BoxGeometry(1, 1, 1); // unit box; scaled via tDummy
-
-  tMeshNormal = new THREE.InstancedMesh(geo,
-    new THREE.MeshPhongMaterial({ vertexColors: true, shininess: 55 }),
-    MAX
-  );
-  tMeshGhost = new THREE.InstancedMesh(geo,
-    new THREE.MeshPhongMaterial({ vertexColors: true, transparent: true, opacity: 0.28, shininess: 20 }),
-    MAX
-  );
-  tMeshNormal.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  tMeshGhost.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  tMeshGhost.renderOrder = 1;
-
-  tScene.add(tMeshNormal, tMeshGhost);
-  threeReady = true;
-}
-
-// Project WGS-84 lat/lng to Three.js world space.
-// Delegates the hard coordinate math to Leaflet to guarantee alignment.
-function tProject(lat, lng) {
-  const pt  = map.latLngToContainerPoint([lat, lng]);
-  const sz  = map.getSize();
-  const asp = sz.x / sz.y;
-  return {
-    x:  ((pt.x / sz.x) * 2 - 1) * asp,
-    y: -((pt.y / sz.y) * 2 - 1)
-  };
-}
-
-// Building footprint (w) and tower height (h) in world units.
-// Scales with zoom so buildings appear the right relative size at every level,
-// capped at zoom 16 to prevent impractically large boxes on deep zooms.
-function tBuildScale() {
-  const sz  = map.getSize();
-  const asp = sz.x / sz.y;
-  const px  = 12 * Math.pow(2, Math.min(map.getZoom(), 16) - 13);
-  const w   = (px / sz.x) * 2 * asp;
-  return { w, h: w * 3 };
-}
-
-function tSyncCamera() {
-  if (!threeReady) return;
-  const sz  = map.getSize();
-  const asp = sz.x / sz.y;
-  tRenderer.setSize(sz.x, sz.y, false);
-  tCamera.left  = -asp;
-  tCamera.right =  asp;
-  tCamera.updateProjectionMatrix();
-}
-
-function tUpdateMesh() {
-  if (!threeReady) return;
-  let nc = 0, gc = 0;
-  const { w, h } = tBuildScale();
-  const MAX = 1000;
-
+/**
+ * Push the current in-scope records into the overlay and draw one frame.
+ * Mirrors the same state that render() uses for 2D markers so both views
+ * are always consistent: same year filter, same category filter.
+ */
+function overlaySync() {
+  if (!overlay) return;
+  overlay.clearBuildings();
   for (const r of records) {
     if (!activeCategories.has(r.category)) continue;
-    if (nc + gc >= MAX) break;
-
     const state = getMarkerState(r, viewYear);
     if (state === "future") continue;
-
-    const { x, y } = tProject(r.lat, r.lng);
-    tColor.set(CATEGORIES[r.category]?.color ?? "#888888");
-
-    // Box center at z = h/2 so the base sits at ground level (z = 0)
-    tDummy.position.set(x, y, h / 2);
-    tDummy.scale.set(w, w, h);
-    tDummy.rotation.set(0, 0, 0);
-    tDummy.updateMatrix();
-
-    if (state === "normal") {
-      tMeshNormal.setMatrixAt(nc, tDummy.matrix);
-      tMeshNormal.setColorAt(nc, tColor);
-      nc++;
-    } else { // "ghost"
-      tMeshGhost.setMatrixAt(gc, tDummy.matrix);
-      tMeshGhost.setColorAt(gc, tColor);
-      gc++;
-    }
+    overlay.addBuilding(r, { ghost: state === "ghost" });
   }
-
-  tMeshNormal.count = nc;
-  tMeshGhost.count  = gc;
-  tMeshNormal.instanceMatrix.needsUpdate = true;
-  tMeshGhost.instanceMatrix.needsUpdate  = true;
-  if (tMeshNormal.instanceColor) tMeshNormal.instanceColor.needsUpdate = true;
-  if (tMeshGhost.instanceColor)  tMeshGhost.instanceColor.needsUpdate  = true;
+  overlay.render();
 }
 
-function tRender() {
-  if (!threeReady) return;
-  tRenderer.render(tScene, tCamera);
-}
-
-// ── Toggle between 2D (Leaflet) and 3D (Three.js) views ─────────────────────
 document.getElementById("toggle-3d").addEventListener("click", async () => {
   threeMode = !threeMode;
   const btn = document.getElementById("toggle-3d");
 
   if (threeMode) {
-    await initThree();
-    document.getElementById("three-canvas").style.display = "block";
+    // Import and instantiate once; subsequent toggles reuse the same instance.
+    if (!overlay) {
+      const { ThreeOverlay } = await import("./three-overlay.js");
+      overlay = new ThreeOverlay(map, {
+        categories:  CATEGORIES,
+        containerId: "map-container",
+      });
+    }
+    await overlay.show();     // lazy Three.js init + canvas visible + events bound
+    overlaySync();            // populate buildings and draw first frame
     map.getPanes().markerPane.style.display = "none";
     map.getPanes().shadowPane.style.display = "none";
-    tSyncCamera();
-    tUpdateMesh();
-    tRender();
     btn.textContent = "2D Mode";
     btn.classList.add("active-3d");
   } else {
-    document.getElementById("three-canvas").style.display = "none";
+    overlay.hide();
     map.getPanes().markerPane.style.display = "";
     map.getPanes().shadowPane.style.display = "";
     btn.textContent = "3D Mode";
     btn.classList.remove("active-3d");
   }
-});
-
-// Re-project whenever the Leaflet viewport changes
-map.on("moveend zoomend resize", () => {
-  if (!threeMode || !threeReady) return;
-  tSyncCamera();
-  tUpdateMesh();
-  tRender();
 });
 </script>
 </body>
