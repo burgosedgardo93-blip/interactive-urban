@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Layers — Moderator</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #0e0e1a;
+      color: #e0d5c5;
+      min-height: 100vh;
+    }
+
+    /* ── Gate screen (shown on wrong password) ───────────────────────────── */
+
+    #gate {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    #gate .gate-logo {
+      font-size: 1.3rem;
+      letter-spacing: 0.14em;
+      color: #d4a857;
+    }
+
+    #gate .gate-msg {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      color: #555;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    #gate .gate-lock {
+      font-size: 2.2rem;
+      color: #3a3020;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+
+    #mod-header {
+      background: rgba(8, 8, 18, 0.97);
+      border-bottom: 1px solid #3a3020;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+    }
+
+    #mod-title {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      color: #d4a857;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    #mod-title span {
+      display: block;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      color: #555;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    #queue-badge {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #888;
+      background: rgba(212, 168, 87, 0.08);
+      border: 1px solid #3a3020;
+      border-radius: 20px;
+      padding: 3px 13px;
+    }
+    #queue-badge strong { color: #d4a857; }
+
+    #refresh-btn {
+      margin-left: auto;
+      padding: 5px 15px;
+      border-radius: 12px;
+      border: 1px solid #3a3020;
+      background: transparent;
+      color: #777;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #refresh-btn:hover { border-color: #d4a857; color: #d4a857; }
+    #refresh-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* ── Content wrapper ─────────────────────────────────────────────────── */
+
+    #content {
+      padding: 28px;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    /* ── State panels ────────────────────────────────────────────────────── */
+
+    #loading-msg, #empty-msg, #error-msg {
+      display: none;
+      text-align: center;
+      padding: 90px 24px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      color: #555;
+    }
+    #loading-msg.show, #empty-msg.show, #error-msg.show { display: block; }
+
+    #loading-msg .spin {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 2px solid #3a3020;
+      border-top-color: #d4a857;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #empty-msg .icon, #error-msg .icon {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+    #error-msg { color: #e05555; }
+    #error-text { margin-top: 6px; font-size: 0.75rem; word-break: break-word; }
+
+    /* ── Card grid ───────────────────────────────────────────────────────── */
+
+    #card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Contribution card ───────────────────────────────────────────────── */
+
+    .contrib-card {
+      background: #0a0a16;
+      border: 1px solid #3a3020;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .contrib-card.dismissing {
+      opacity: 0;
+      transform: scale(0.94);
+      pointer-events: none;
+    }
+
+    /* Mini Leaflet map thumbnail */
+    .card-map {
+      height: 155px;
+      background: #0a0a1e;
+      flex-shrink: 0;
+      cursor: default;
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 13px 16px 8px;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 5px;
+    }
+
+    .card-cat {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .card-date {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      color: #555;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      color: #d4a857;
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .card-year {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #777;
+      margin-bottom: 8px;
+    }
+
+    .card-demolished { color: #e05555; margin-left: 5px; }
+
+    .card-desc {
+      font-size: 0.77rem;
+      color: #b0a595;
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #1e1e2e;
+    }
+
+    .detail-row {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.67rem;
+      color: #666;
+    }
+    .detail-row strong { color: #888; font-weight: normal; }
+
+    .card-img-preview {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #16162a;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .card-img-url {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      color: #555;
+      word-break: break-all;
+      margin-bottom: 6px;
+    }
+
+    /* Card footer */
+    .card-footer {
+      padding: 10px 16px 14px;
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid #1a1a2a;
+      flex-shrink: 0;
+    }
+
+    .btn-reject {
+      flex: 1;
+      padding: 7px;
+      border-radius: 4px;
+      border: 1px solid #3a3020;
+      background: transparent;
+      color: #777;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-reject:hover:not(:disabled) {
+      border-color: #e05555;
+      color: #e05555;
+    }
+
+    .btn-approve {
+      flex: 2;
+      padding: 7px;
+      border-radius: 4px;
+      border: none;
+      background: #d4a857;
+      color: #0e0e1a;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-approve:hover:not(:disabled) { background: #c4982d; }
+
+    .btn-reject:disabled,
+    .btn-approve:disabled { opacity: 0.38; cursor: default; }
+
+    /* ── Toast notification ──────────────────────────────────────────────── */
+
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(72px);
+      background: #12121f;
+      border: 1px solid #3a3020;
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.78rem;
+      color: #e0d5c5;
+      z-index: 9000;
+      opacity: 0;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      white-space: nowrap;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+    }
+    #toast.show  { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.ok    { border-color: #7ec88a; color: #7ec88a; }
+    #toast.fail  { border-color: #e05555; color: #e05555; }
+
+    /* ── Leaflet overrides ───────────────────────────────────────────────── */
+
+    .leaflet-control-attribution {
+      font-size: 0.52rem !important;
+      background: rgba(8, 8, 18, 0.75) !important;
+      color: #444 !important;
+      padding: 1px 5px !important;
+    }
+    .leaflet-control-attribution a { color: #555 !important; }
+  </style>
+</head>
+<body>
+
+<!-- Shown when the wrong password is entered -->
+<div id="gate">
+  <div class="gate-lock">&#128274;</div>
+  <div class="gate-logo">URBAN LAYERS</div>
+  <p class="gate-msg">
+    Access denied.<br>
+    Reload the page and enter the correct admin password.
+  </p>
+</div>
+
+<!-- Main app (revealed after successful password check) -->
+<div id="app" style="display:none;">
+
+  <div id="mod-header">
+    <div id="mod-title">
+      URBAN LAYERS — MODERATOR
+      <span>Pending Contributions Review</span>
+    </div>
+    <div id="queue-badge">Queue: <strong id="queue-count">—</strong></div>
+    <button id="refresh-btn">&#8635; Refresh</button>
+  </div>
+
+  <div id="content">
+    <!-- Loading -->
+    <div id="loading-msg" class="show">
+      <div class="spin"></div><br>
+      Loading pending contributions…
+    </div>
+
+    <!-- Empty queue -->
+    <div id="empty-msg">
+      <span class="icon">&#10003;</span>
+      Queue is clear — no pending contributions.
+    </div>
+
+    <!-- Error -->
+    <div id="error-msg">
+      <span class="icon">&#9888;</span>
+      Failed to load contributions.
+      <div id="error-text"></div>
+    </div>
+
+    <!-- Cards -->
+    <div id="card-grid"></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// =============================================================================
+// CONFIGURATION
+//
+// Set these globals in a <script> block before this file loads, e.g. via a
+// config.js or inline in a wrapper HTML:
+//
+//   window.SUPABASE_URL          = 'https://<ref>.supabase.co';
+//   window.SUPABASE_SERVICE_KEY  = 'eyJ…';  // preferred: bypasses RLS
+//   window.SUPABASE_ANON_KEY     = 'eyJ…';  // fallback: needs admin JWT
+//   window.MODERATOR_PASSWORD    = 'your-secret';
+//
+// NOTE: The prompt() gate is a lightweight UI barrier only.
+// True security is enforced by Supabase RLS (is_admin() JWT check).
+// The service-role key bypasses RLS entirely — never expose it to end-users.
+// =============================================================================
+
+const ADMIN_PASSWORD = window.MODERATOR_PASSWORD ?? "urban-layers-admin";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN GATE
+// Synchronous prompt() at top-level stops script execution on failure.
+// ─────────────────────────────────────────────────────────────────────────────
+
+(function checkAccess() {
+  const entered = prompt("Urban Layers Moderator — Enter admin password:");
+  if (entered !== null && entered === ADMIN_PASSWORD) {
+    document.getElementById("app").style.display = "";
+    return; // access granted — continue script
+  }
+  document.getElementById("gate").style.display = "flex";
+  // Stop all further execution in this script block
+  throw new Error("[Urban Layers] Moderator access denied.");
+}());
+
+// =============================================================================
+// CATEGORY CONFIG  (mirrors index.html)
+// =============================================================================
+
+const CATEGORIES = {
+  civic:          { color: "#5b9bd5", label: "Civic" },
+  commercial:     { color: "#7ec88a", label: "Commercial" },
+  residential:    { color: "#e8a44a", label: "Residential" },
+  infrastructure: { color: "#a782c3", label: "Infrastructure" },
+  entertainment:  { color: "#e07a7a", label: "Entertainment" },
+  religious:      { color: "#6ecfcf", label: "Religious" },
+};
+
+// =============================================================================
+// SUPABASE CLIENT
+// Prefers SUPABASE_SERVICE_KEY (bypasses RLS) so the page works without
+// requiring the moderator to be signed in with an admin JWT.
+// Falls back to SUPABASE_ANON_KEY — in that case the user must hold an admin
+// JWT for the RLS policies to permit the writes.
+// =============================================================================
+
+let _adminClient = null;
+
+async function getAdminClient() {
+  if (_adminClient) return _adminClient;
+
+  const url  = window.SUPABASE_URL;
+  const key  = window.SUPABASE_SERVICE_KEY ?? window.SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error(
+      "window.SUPABASE_URL and SUPABASE_SERVICE_KEY (or SUPABASE_ANON_KEY) must be set."
+    );
+  }
+
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  _adminClient = createClient(url, key);
+  return _adminClient;
+}
+
+// =============================================================================
+// DATA OPERATIONS
+// =============================================================================
+
+// Mirrors fetchPendingContributions() from supabase-client.js
+async function fetchPending() {
+  const client = await getAdminClient();
+  const { data, error } = await client
+    .from("contributions")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+// Approve: copy into records (verified=true), then mark contribution approved.
+// Uses upsert so an accidental double-click is idempotent.
+async function approveContribution(c) {
+  const client = await getAdminClient();
+
+  const { error: recErr } = await client.from("records").upsert({
+    id:             c.id,               // contribution UUID becomes record PK
+    year:           c.year,
+    title:          c.title,
+    category:       c.category,
+    description:    c.description   ?? null,
+    lat:            c.lat,
+    lng:            c.lng,
+    architect:      c.architect     ?? null,
+    demolished:     c.demolished    ?? null,
+    img_url:        c.img_url       ?? null,
+    source:         "community",
+    contributor_id: c.contributor_id,
+    verified:       true,
+  });
+  if (recErr) throw new Error(`records upsert: ${recErr.message}`);
+
+  const { error: updErr } = await client
+    .from("contributions")
+    .update({ status: "approved" })
+    .eq("id", c.id);
+  if (updErr) throw new Error(`contributions update: ${updErr.message}`);
+}
+
+// Reject: prompt for one-line note, then update contributions status.
+// Returns false if the moderator cancelled the prompt (no-op).
+async function rejectContribution(c) {
+  const note = prompt(
+    `Reject "${c.title}"\n\nEnter a brief moderator note (optional — press OK to skip):`
+  );
+  if (note === null) return false; // cancelled → abort silently
+
+  const client = await getAdminClient();
+  const { error } = await client
+    .from("contributions")
+    .update({
+      status:           "rejected",
+      moderator_notes:  note.trim() || null,
+    })
+    .eq("id", c.id);
+  if (error) throw new Error(error.message);
+  return true;
+}
+
+// =============================================================================
+// CARD RENDERING
+// =============================================================================
+
+// In-memory list and mini-map registry
+let contributions = [];
+const miniMaps    = {}; // contribution.id → L.map instance
+
+function escHtml(v) {
+  if (v == null) return "";
+  return String(v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Only permit http/https for image src to prevent javascript: injection.
+function safeImgUrl(url) {
+  if (!url) return "";
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function formatDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric"
+  });
+}
+
+function buildCard(c) {
+  const cat    = CATEGORIES[c.category] || { color: "#888888", label: c.category };
+  const safeId = c.id.replace(/[^a-z0-9]/gi, "-");
+
+  const demolishedTag = c.demolished
+    ? `<span class="card-demolished">demolished ${c.demolished}</span>` : "";
+  const descBlock = c.description
+    ? `<div class="card-desc">${escHtml(c.description)}</div>` : "";
+  const architectRow = c.architect
+    ? `<div class="detail-row"><strong>Architect: </strong>${escHtml(c.architect)}</div>` : "";
+
+  const imgSrc = safeImgUrl(c.img_url);
+  const imgBlock = imgSrc
+    ? `<img class="card-img-preview"
+           src="${escHtml(imgSrc)}"
+           alt="${escHtml(c.title)}"
+           loading="lazy"
+           onerror="this.style.display='none'">
+       <div class="card-img-url">${escHtml(c.img_url)}</div>` : "";
+
+  return `
+<div class="contrib-card" id="card-${safeId}">
+  <div class="card-map" id="map-${safeId}"></div>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="card-cat" style="color:${cat.color}">${escHtml(cat.label)}</span>
+      <span class="card-date">${formatDate(c.created_at)}</span>
+    </div>
+    <div class="card-title">${escHtml(c.title)}</div>
+    <div class="card-year">Built ${c.year}${demolishedTag}</div>
+    ${descBlock}
+    <div class="card-details">
+      ${architectRow}
+      <div class="detail-row">
+        <strong>Coords: </strong>${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}
+      </div>
+      <div class="detail-row">
+        <strong>Contributor: </strong>${escHtml(c.contributor_id)}
+      </div>
+    </div>
+    ${imgBlock}
+  </div>
+  <div class="card-footer">
+    <button class="btn-reject"  data-id="${escHtml(c.id)}">Reject</button>
+    <button class="btn-approve" data-id="${escHtml(c.id)}">Approve</button>
+  </div>
+</div>`;
+}
+
+function initMiniMap(c) {
+  const safeId = c.id.replace(/[^a-z0-9]/gi, "-");
+  const el     = document.getElementById(`map-${safeId}`);
+  if (!el) return;
+
+  // Guard: tear down any existing Leaflet instance on this element
+  if (miniMaps[c.id]) { miniMaps[c.id].remove(); delete miniMaps[c.id]; }
+
+  const m = L.map(el, {
+    center:            [c.lat, c.lng],
+    zoom:              14,
+    dragging:          false,
+    zoomControl:       false,
+    scrollWheelZoom:   false,
+    touchZoom:         false,
+    doubleClickZoom:   false,
+    keyboard:          false,
+    attributionControl: true,
+  });
+
+  L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    { subdomains: "abcd", maxZoom: 19 }
+  ).addTo(m);
+
+  const cat = CATEGORIES[c.category] || { color: "#d4a857" };
+  L.circleMarker([c.lat, c.lng], {
+    radius:      7,
+    color:       cat.color,
+    weight:      2,
+    fillColor:   cat.color,
+    fillOpacity: 0.4,
+  }).addTo(m);
+
+  miniMaps[c.id] = m;
+}
+
+function renderCards(list) {
+  const grid = document.getElementById("card-grid");
+  grid.innerHTML = list.map(buildCard).join("");
+
+  // Wire action buttons
+  grid.querySelectorAll(".btn-approve").forEach(btn =>
+    btn.addEventListener("click", () => handleAction(btn.dataset.id, "approve"))
+  );
+  grid.querySelectorAll(".btn-reject").forEach(btn =>
+    btn.addEventListener("click", () => handleAction(btn.dataset.id, "reject"))
+  );
+
+  // Init mini-maps after paint so elements have layout
+  requestAnimationFrame(() => list.forEach(initMiniMap));
+}
+
+// =============================================================================
+// ACTION HANDLER
+// =============================================================================
+
+async function handleAction(id, action) {
+  const c = contributions.find(x => x.id === id);
+  if (!c) return;
+
+  const safeId     = id.replace(/[^a-z0-9]/gi, "-");
+  const cardEl     = document.getElementById(`card-${safeId}`);
+  const approveBtn = cardEl?.querySelector(".btn-approve");
+  const rejectBtn  = cardEl?.querySelector(".btn-reject");
+
+  if (approveBtn) approveBtn.disabled = true;
+  if (rejectBtn)  rejectBtn.disabled  = true;
+
+  try {
+    if (action === "approve") {
+      await approveContribution(c);
+      showToast(`✓ "${c.title}" approved and added to records.`, "ok");
+    } else {
+      const done = await rejectContribution(c);
+      if (!done) {
+        // Moderator cancelled the note prompt — restore buttons and bail
+        if (approveBtn) approveBtn.disabled = false;
+        if (rejectBtn)  rejectBtn.disabled  = false;
+        return;
+      }
+      showToast(`"${c.title}" rejected.`, "ok");
+    }
+
+    // Animate card out, then remove from DOM and in-memory list
+    if (cardEl) {
+      cardEl.classList.add("dismissing");
+      setTimeout(() => {
+        cardEl.remove();
+        if (miniMaps[id]) { miniMaps[id].remove(); delete miniMaps[id]; }
+        contributions = contributions.filter(x => x.id !== id);
+        updateBadge();
+        if (contributions.length === 0) showState("empty");
+      }, 320);
+    }
+
+  } catch (err) {
+    console.error("[Moderator]", err);
+    showToast(err.message, "fail");
+    if (approveBtn) approveBtn.disabled = false;
+    if (rejectBtn)  rejectBtn.disabled  = false;
+  }
+}
+
+// =============================================================================
+// UI STATE HELPERS
+// =============================================================================
+
+function showState(state) {
+  // state: "loading" | "empty" | "error" | "grid"
+  document.getElementById("loading-msg").classList.toggle("show", state === "loading");
+  document.getElementById("empty-msg").classList.toggle("show",   state === "empty");
+  document.getElementById("error-msg").classList.toggle("show",   state === "error");
+  if (state !== "loading") document.getElementById("refresh-btn").disabled = false;
+}
+
+function updateBadge() {
+  document.getElementById("queue-count").textContent = contributions.length;
+}
+
+let _toastTimer = null;
+function showToast(msg, type = "ok") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className   = `show ${type}`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.className = ""; }, 3800);
+}
+
+// =============================================================================
+// LOAD
+// =============================================================================
+
+async function loadQueue() {
+  // Tear down all existing mini-maps before clearing the grid
+  Object.values(miniMaps).forEach(m => m.remove());
+  Object.keys(miniMaps).forEach(k => delete miniMaps[k]);
+
+  document.getElementById("card-grid").innerHTML = "";
+  document.getElementById("refresh-btn").disabled = true;
+  document.getElementById("queue-count").textContent = "—";
+  showState("loading");
+
+  try {
+    contributions = await fetchPending();
+    updateBadge();
+    if (contributions.length === 0) {
+      showState("empty");
+    } else {
+      showState("grid");
+      renderCards(contributions);
+    }
+  } catch (err) {
+    console.error("[Moderator]", err);
+    document.getElementById("error-text").textContent = err.message;
+    showState("error");
+    document.getElementById("refresh-btn").disabled = false;
+  }
+}
+
+document.getElementById("refresh-btn").addEventListener("click", loadQueue);
+
+// Boot
+loadQueue();
+</script>
+</body>
+</html>

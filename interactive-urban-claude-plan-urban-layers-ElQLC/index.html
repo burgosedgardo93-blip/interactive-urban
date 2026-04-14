@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Layers — 4D Historical San Francisco</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Category colour palette ─────────────────────────────────────────────
+       Single source of truth. Consumed by JS (CATEGORIES object), the
+       category pill components, and ThreeOverlay via getComputedStyle.   */
+    :root {
+      --color-civic:          #5b9bd5;
+      --color-commercial:     #7ec88a;
+      --color-residential:    #e8a44a;
+      --color-infrastructure: #a782c3;
+      --color-entertainment:  #e07a7a;
+      --color-religious:      #6ecfcf;
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #0e0e1a;
+      color: #e0d5c5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+
+    #header {
+      background: rgba(8, 8, 18, 0.97);
+      border-bottom: 1px solid #3a3020;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+
+    #title {
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      color: #d4a857;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    #title span {
+      font-size: 0.68rem;
+      color: #666;
+      display: block;
+      letter-spacing: 0.08em;
+      font-family: 'Arial', sans-serif;
+      margin-top: 1px;
+    }
+
+    /* ── Year slider ─────────────────────────────────────────────────────── */
+
+    #year-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 380px;
+    }
+
+    #year-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #777;
+      white-space: nowrap;
+    }
+
+    #year-display {
+      font-size: 1.55rem;
+      font-weight: bold;
+      color: #d4a857;
+      min-width: 3.2rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #year-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: linear-gradient(to right, #d4a857 var(--pct, 60%), #3a3020 var(--pct, 60%));
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #year-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: #d4a857;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(212,168,87,0.5);
+      cursor: pointer;
+    }
+
+    #year-slider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: #d4a857;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+
+    #year-range {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #555;
+      white-space: nowrap;
+    }
+
+    /* ── Category pills ──────────────────────────────────────────────────── */
+
+    #category-filters {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    #filters-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      color: #666;
+      margin-right: 2px;
+    }
+
+    .cat-pill {
+      padding: 3px 11px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      user-select: none;
+      letter-spacing: 0.04em;
+      background: transparent;
+    }
+
+    .cat-pill.active { opacity: 1; }
+    .cat-pill:not(.active) {
+      opacity: 0.35;
+      filter: grayscale(0.6);
+    }
+
+    /* ── Map area ────────────────────────────────────────────────────────── */
+
+    #map-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    /* ── Counter badge ───────────────────────────────────────────────────── */
+
+    #counter {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(8, 8, 18, 0.88);
+      border: 1px solid #3a3020;
+      border-radius: 5px;
+      padding: 6px 12px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      color: #888;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    #counter strong { color: #d4a857; }
+
+    /* ── Legend ──────────────────────────────────────────────────────────── */
+
+    #legend {
+      position: absolute;
+      bottom: 30px;
+      left: 12px;
+      background: rgba(8, 8, 18, 0.88);
+      border: 1px solid #3a3020;
+      border-radius: 5px;
+      padding: 10px 14px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: #888;
+      z-index: 900;
+      pointer-events: none;
+    }
+
+    #legend h4 {
+      color: #d4a857;
+      margin-bottom: 8px;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Leaflet popup overrides ─────────────────────────────────────────── */
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(10, 10, 22, 0.97);
+      border: 1px solid #3a3020;
+      border-radius: 6px;
+      color: #e0d5c5;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.75);
+    }
+
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-close-button { color: #666 !important; font-size: 18px !important; top: 8px !important; right: 10px !important; }
+    .leaflet-popup-close-button:hover { color: #d4a857 !important; }
+
+    .leaflet-popup-content {
+      margin: 14px 16px 14px 16px;
+      min-width: 230px;
+      max-width: 290px;
+    }
+
+    .popup-img-placeholder {
+      width: 100%;
+      height: 72px;
+      background: #16162a;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-style: italic;
+    }
+
+    .popup-img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background: #16162a;
+      display: block;
+    }
+
+    .popup-cat {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .popup-title {
+      font-size: 1.05rem;
+      color: #d4a857;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .popup-year {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.74rem;
+      color: #888;
+      margin-bottom: 9px;
+    }
+
+    .popup-demolished {
+      color: #e05555;
+      margin-left: 6px;
+    }
+
+    .popup-desc {
+      font-size: 0.78rem;
+      color: #b0a595;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .popup-architect {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.7rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* ── Loading shimmer ─────────────────────────────────────────────────── */
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212, 168, 87, 0.12) 50%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.1s ease-in-out infinite;
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* ── Marker transitions ──────────────────────────────────────────────── */
+
+    .leaflet-marker-icon {
+      transition: opacity 200ms ease;
+    }
+
+    /* ── 3D building list sidebar ────────────────────────────────────────── */
+
+    #building-list-3d {
+      display: none;
+      position: absolute;
+      right: 12px;
+      bottom: 30px;
+      width: 188px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: rgba(8, 8, 18, 0.88);
+      border: 1px solid #3a3020;
+      border-radius: 5px;
+      padding: 10px 12px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      color: #888;
+      z-index: 900;
+      scrollbar-width: thin;
+      scrollbar-color: #3a3020 transparent;
+    }
+    #building-list-3d::-webkit-scrollbar { width: 4px; }
+    #building-list-3d::-webkit-scrollbar-thumb { background: #3a3020; border-radius: 2px; }
+
+    #building-list-3d h4 {
+      color: #d4a857;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 7px;
+    }
+
+    .blist-item {
+      padding: 3px 0;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.1s;
+      line-height: 1.4;
+    }
+    .blist-item:hover { color: #d4a857; }
+    .blist-item.selected { color: #d4a857; }
+
+    /* ── 3D toggle button ────────────────────────────────────────────────── */
+
+    #toggle-3d {
+      padding: 4px 14px;
+      border-radius: 12px;
+      border: 1px solid #d4a857;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      cursor: pointer;
+      background: transparent;
+      color: #d4a857;
+      letter-spacing: 0.06em;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #toggle-3d:hover     { background: rgba(212,168,87,0.12); }
+    #toggle-3d.active-3d { background: #d4a857; color: #0e0e1a; }
+
+    /* ── Submit a Record button ──────────────────────────────────────────── */
+
+    #submit-btn {
+      padding: 4px 14px;
+      border-radius: 12px;
+      border: 1px solid #d4a857;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.68rem;
+      font-weight: bold;
+      cursor: pointer;
+      background: #d4a857;
+      color: #0e0e1a;
+      letter-spacing: 0.06em;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #submit-btn:hover { background: #c4982d; border-color: #c4982d; }
+
+    /* ── Contribution drawer ─────────────────────────────────────────────── */
+
+    #drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 18, 0.55);
+      z-index: 1050;
+    }
+    #drawer-backdrop.open { display: block; }
+
+    #drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 370px;
+      height: 100vh;
+      background: #0a0a16;
+      border-left: 1px solid #3a3020;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.28s ease;
+    }
+    #drawer.open { right: 0; }
+
+    #drawer-header {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #3a3020;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    #drawer-title {
+      font-size: 0.88rem;
+      color: #d4a857;
+      letter-spacing: 0.12em;
+    }
+
+    #drawer-close {
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+      font-family: 'Arial', sans-serif;
+    }
+    #drawer-close:hover { color: #d4a857; }
+
+    #drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #3a3020 transparent;
+    }
+    #drawer-body::-webkit-scrollbar { width: 4px; }
+    #drawer-body::-webkit-scrollbar-thumb { background: #3a3020; border-radius: 2px; }
+
+    /* ── Drawer form fields ──────────────────────────────────────────────── */
+
+    .drw-field { margin-bottom: 13px; }
+
+    .drw-field label {
+      display: block;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.64rem;
+      color: #777;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .drw-field label .req { color: #e05555; margin-left: 1px; }
+
+    .drw-field input,
+    .drw-field select,
+    .drw-field textarea {
+      width: 100%;
+      background: #16162a;
+      border: 1px solid #3a3020;
+      border-radius: 4px;
+      color: #e0d5c5;
+      font-family: 'Georgia', serif;
+      font-size: 0.83rem;
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .drw-field input:focus,
+    .drw-field select:focus,
+    .drw-field textarea:focus { border-color: #d4a857; }
+    .drw-field input.err, .drw-field select.err { border-color: #e05555; }
+    .drw-field textarea { resize: vertical; min-height: 68px; }
+    .drw-field select option { background: #0a0a16; color: #e0d5c5; }
+
+    /* Inline field error */
+    .drw-err {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.63rem;
+      color: #e05555;
+      margin-top: 4px;
+      display: none;
+    }
+    .drw-err.show { display: block; }
+
+    /* Two-column layout */
+    .drw-row { display: flex; gap: 10px; }
+    .drw-row > .drw-field { flex: 1; margin-bottom: 0; }
+
+    /* Demolished toggle switch */
+    .drw-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+    .drw-toggle-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.64rem;
+      color: #777;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .drw-toggle {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .drw-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .drw-toggle .drw-slider {
+      position: absolute;
+      inset: 0;
+      background: #2a2820;
+      border: 1px solid #3a3020;
+      border-radius: 10px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .drw-toggle .drw-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 2px;
+      top: 2px;
+      background: #555;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .drw-toggle input:checked + .drw-slider { background: #d4a857; border-color: #d4a857; }
+    .drw-toggle input:checked + .drw-slider::before {
+      transform: translateX(16px);
+      background: #0e0e1a;
+    }
+
+    /* Pick-on-map controls */
+    #pick-btn {
+      margin-top: 7px;
+      padding: 5px 11px;
+      border-radius: 4px;
+      border: 1px solid #3a3020;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #777;
+      background: transparent;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #pick-btn:hover, #pick-btn.picking { border-color: #d4a857; color: #d4a857; }
+
+    .pick-hint {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.63rem;
+      color: #d4a857;
+      margin-top: 5px;
+      display: none;
+    }
+    .pick-hint.show { display: block; }
+
+    /* Drawer footer */
+    #drawer-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #3a3020;
+      flex-shrink: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #submit-err {
+      width: 100%;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.65rem;
+      color: #e05555;
+      display: none;
+    }
+    #submit-err.show { display: block; }
+
+    #drawer-submit {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: 4px;
+      background: #d4a857;
+      color: #0e0e1a;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    #drawer-submit:hover:not(:disabled) { background: #c4982d; }
+    #drawer-submit:disabled { opacity: 0.45; cursor: default; }
+
+    #drawer-cancel {
+      padding: 9px 16px;
+      border-radius: 4px;
+      border: 1px solid #3a3020;
+      background: transparent;
+      color: #777;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #drawer-cancel:hover { border-color: #d4a857; color: #d4a857; }
+
+    /* Success state */
+    #drawer-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 48px 24px;
+      text-align: center;
+      height: 100%;
+    }
+    #drawer-success.show { display: flex; }
+    #drawer-success p {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.82rem;
+      color: #b0a595;
+      line-height: 1.65;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div id="title">
+    URBAN LAYERS
+    <span>4D Historical San Francisco</span>
+  </div>
+
+  <div id="year-control">
+    <div id="year-label">Viewing year</div>
+    <span id="year-display">1950</span>
+    <input type="range" id="year-slider" min="1791" max="2000" value="1950" step="1">
+    <span id="year-range">1791 – 2000</span>
+  </div>
+
+  <div id="category-filters">
+    <span id="filters-label">Filter:</span>
+  </div>
+
+  <button id="toggle-3d">3D Mode</button>
+  <button id="submit-btn">Submit a Record</button>
+</div>
+
+<div id="map-container">
+  <div id="map"></div>
+  <!-- Three.js canvas is created and owned by ThreeOverlay (three-overlay.js) -->
+
+  <div id="counter">
+    Showing <strong id="visible-count">—</strong> of <strong id="total-count">12</strong> structures
+  </div>
+
+  <div id="legend">
+    <h4>LEGEND</h4>
+    <div class="legend-row">
+      <div class="legend-dot" style="background:#d4a857; box-shadow:0 0 4px #d4a85766;"></div>
+      Standing at this year
+    </div>
+    <div class="legend-row">
+      <div class="legend-dot" style="background:#e05555; box-shadow:0 0 4px #e0555566;"></div>
+      Later demolished
+    </div>
+  </div>
+
+  <!-- Sidebar shown only in 3D mode; lists visible buildings for fly-to -->
+  <div id="building-list-3d">
+    <h4>BUILDINGS</h4>
+    <div id="building-list-items"></div>
+  </div>
+</div>
+
+<!-- ── Contribution Drawer ──────────────────────────────────────────────────── -->
+<div id="drawer-backdrop"></div>
+
+<div id="drawer">
+  <div id="drawer-header">
+    <span id="drawer-title">SUBMIT A RECORD</span>
+    <button id="drawer-close" title="Close">&#x2715;</button>
+  </div>
+
+  <div id="drawer-body">
+    <div id="drawer-form">
+
+      <!-- Title -->
+      <div class="drw-field">
+        <label for="f-title">Title <span class="req">*</span></label>
+        <input type="text" id="f-title" placeholder="e.g. Ferry Building">
+        <span class="drw-err" id="err-title">Title is required.</span>
+      </div>
+
+      <!-- Year + Category row -->
+      <div class="drw-row" style="margin-bottom:13px;">
+        <div class="drw-field">
+          <label for="f-year">Year <span class="req">*</span></label>
+          <input type="number" id="f-year" min="1800" max="2000" placeholder="1906">
+          <span class="drw-err" id="err-year">Year must be 1800–2000.</span>
+        </div>
+        <div class="drw-field">
+          <label for="f-cat">Category <span class="req">*</span></label>
+          <select id="f-cat">
+            <option value="">— select —</option>
+            <option value="civic">Civic</option>
+            <option value="commercial">Commercial</option>
+            <option value="residential">Residential</option>
+            <option value="infrastructure">Infrastructure</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="religious">Religious</option>
+          </select>
+          <span class="drw-err" id="err-cat">Category is required.</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="drw-field">
+        <label for="f-desc">Description</label>
+        <textarea id="f-desc" placeholder="Brief history of the building…"></textarea>
+      </div>
+
+      <!-- Location -->
+      <div class="drw-field">
+        <label>Location <span class="req">*</span></label>
+        <div style="display:flex;gap:10px;">
+          <input type="number" id="f-lat" step="any" placeholder="Lat e.g. 37.7749" style="flex:1;">
+          <input type="number" id="f-lng" step="any" placeholder="Lng e.g. −122.419" style="flex:1;">
+        </div>
+        <button type="button" id="pick-btn">Pick on map</button>
+        <span class="pick-hint" id="pick-hint">Click anywhere on the map to set the location.</span>
+        <span class="drw-err" id="err-loc">Latitude and longitude are required.</span>
+      </div>
+
+      <!-- Architect -->
+      <div class="drw-field">
+        <label for="f-arch">Architect</label>
+        <input type="text" id="f-arch" placeholder="e.g. Julia Morgan">
+      </div>
+
+      <!-- Demolished toggle -->
+      <div class="drw-toggle-row">
+        <span class="drw-toggle-label">Demolished</span>
+        <label class="drw-toggle">
+          <input type="checkbox" id="f-dem-toggle">
+          <span class="drw-slider"></span>
+        </label>
+      </div>
+
+      <!-- Demolished year (shown only when toggle is on) -->
+      <div class="drw-field" id="f-dem-wrap" style="display:none;">
+        <label for="f-dem-year">Demolished year</label>
+        <input type="number" id="f-dem-year" min="1800" max="2025" placeholder="e.g. 1966">
+      </div>
+
+      <!-- Image URL -->
+      <div class="drw-field">
+        <label for="f-img">Image URL (optional)</label>
+        <input type="url" id="f-img" placeholder="https://…">
+      </div>
+
+    </div><!-- /#drawer-form -->
+
+    <!-- Success state -->
+    <div id="drawer-success">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="27" stroke="#d4a857" stroke-width="2" fill="none"/>
+        <polyline points="16,28 24,36 40,20" stroke="#d4a857" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <p>Your record has been submitted for review.<br>Thank you for contributing to Urban Layers!</p>
+    </div>
+
+  </div><!-- /#drawer-body -->
+
+  <div id="drawer-footer">
+    <span id="submit-err"></span>
+    <button type="button" id="drawer-cancel">Cancel</button>
+    <button type="button" id="drawer-submit">Submit Record</button>
+  </div>
+</div><!-- /#drawer -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- importmap: lets OrbitControls (and any other three/examples/jsm module) resolve
+     the bare specifier "three" to the same module instance loaded by ThreeOverlay.
+     Must appear before any module scripts and before the dynamic import() calls. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js"
+  }
+}
+</script>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA MODEL: { id, year, title, category, desc, lat, lng, architect, demolished, img }
+// demolished: null = still standing | number = year it was demolished
+// BASE_RECORDS: seeded fallback used when the LOC API is unreachable
+// ─────────────────────────────────────────────────────────────────────────────
+
+const BASE_RECORDS = [
+  {
+    id: "sf-001",
+    year: 1898,
+    title: "Ferry Building",
+    category: "civic",
+    desc: "Beaux-Arts transit hub and marketplace at the foot of Market Street. Its 245-foot clock tower survived the 1906 earthquake nearly intact, becoming a symbol of the city's resilience.",
+    lat: 37.7955, lng: -122.3937,
+    architect: "A. Page Brown",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-002",
+    year: 1915,
+    title: "San Francisco City Hall",
+    category: "civic",
+    desc: "Rebuilt after the 1906 earthquake, this Beaux-Arts masterpiece features a dome taller than the U.S. Capitol. Designed to project civic confidence after the disaster.",
+    lat: 37.7793, lng: -122.4193,
+    architect: "Arthur Brown Jr.",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-003",
+    year: 1972,
+    title: "Transamerica Pyramid",
+    category: "commercial",
+    desc: "Postmodern skyscraper that became the most recognizable feature of the SF skyline. Controversial at its 1972 opening, it is now a protected landmark.",
+    lat: 37.7952, lng: -122.4028,
+    architect: "William Pereira",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-004",
+    year: 1896,
+    title: "Sutro Baths",
+    category: "entertainment",
+    desc: "The world's largest indoor swimming complex in its day, holding over 1.6 million gallons in six saltwater pools. A marvel of Victorian engineering, destroyed by fire in 1966.",
+    lat: 37.7799, lng: -122.5133,
+    architect: "Adolph Sutro",
+    demolished: 1966,
+    img: null
+  },
+  {
+    id: "sf-005",
+    year: 1886,
+    title: "Haas-Lilienthal House",
+    category: "residential",
+    desc: "One of the few intact Victorian-era mansions in San Francisco. This Queen Anne–style home survived the 1906 earthquake and fire and is now a house museum.",
+    lat: 37.7875, lng: -122.4327,
+    architect: "Peter R. Schmidt",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-006",
+    year: 1959,
+    title: "Embarcadero Freeway",
+    category: "infrastructure",
+    desc: "Double-deck elevated freeway that bisected downtown from the waterfront. Long contested by preservationists, it was demolished after sustaining damage in the 1989 Loma Prieta earthquake.",
+    lat: 37.7956, lng: -122.3975,
+    architect: null,
+    demolished: 1991,
+    img: null
+  },
+  {
+    id: "sf-007",
+    year: 1915,
+    title: "Palace of Fine Arts",
+    category: "civic",
+    desc: "Designed for the 1915 Panama-Pacific International Exposition, this beloved Roman-classical rotunda was preserved permanently. The current concrete structure is a 1960s reconstruction.",
+    lat: 37.8029, lng: -122.4484,
+    architect: "Bernard Maybeck",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-008",
+    year: 1913,
+    title: "Spreckels Mansion",
+    category: "residential",
+    desc: "Lavish Beaux-Arts palace built for sugar heiress Alma de Bretteville Spreckels, inspired by the Palace of Versailles. Now a private residence, owned for many years by author Danielle Steel.",
+    lat: 37.7921, lng: -122.4444,
+    architect: "George Applegarth",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-009",
+    year: 1933,
+    title: "Coit Tower",
+    category: "civic",
+    desc: "Art Deco tower atop Telegraph Hill, built with funds bequeathed by Lillie Hitchcock Coit to beautify the city. Its interior New Deal murals depicting labor and society remain controversial.",
+    lat: 37.8024, lng: -122.4058,
+    architect: "Arthur Brown Jr.",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-010",
+    year: 1791,
+    title: "Mission Dolores",
+    category: "religious",
+    desc: "Oldest intact building in San Francisco, founded as Mission San Francisco de Asís. The adobe walls have withstood every earthquake since the Spanish colonial period.",
+    lat: 37.7652, lng: -122.4270,
+    architect: null,
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-011",
+    year: 1909,
+    title: "Cliff House",
+    category: "entertainment",
+    desc: "Third iteration of a Victorian pleasure resort perched on the cliffs above Ocean Beach. The current Adirondack-style building replaced a grand château that burned in 1907.",
+    lat: 37.7786, lng: -122.5134,
+    architect: "Reid Brothers",
+    demolished: null,
+    img: null
+  },
+  {
+    id: "sf-012",
+    year: 1866,
+    title: "Woodward's Gardens",
+    category: "entertainment",
+    desc: "San Francisco's first great amusement park, covering two city blocks between Mission and Valencia. Featured a zoo, aquarium, art gallery, and amphitheater before closing in 1891.",
+    lat: 37.7677, lng: -122.4181,
+    architect: null,
+    demolished: 1894,
+    img: null
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CATEGORIES = {
+  civic:          { color: "#5b9bd5", label: "Civic" },
+  commercial:     { color: "#7ec88a", label: "Commercial" },
+  residential:    { color: "#e8a44a", label: "Residential" },
+  infrastructure: { color: "#a782c3", label: "Infrastructure" },
+  entertainment:  { color: "#e07a7a", label: "Entertainment" },
+  religious:      { color: "#6ecfcf", label: "Religious" }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOC IMAGE ENRICHMENT
+//
+// LoC is now a secondary source: it fills img_url gaps for records that have
+// no photo stored in Supabase. Records themselves come from Supabase.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LOC_BASE    = "https://www.loc.gov/photos/";
+const DEBOUNCE_MS = 300; // debounce for slider input and map pan/zoom
+
+// Fetch a single LoC photo URL matching title + year (±5-year window).
+// Throws on AbortError so the caller (enrichImages) can detect cancellation.
+async function fetchLocImg(title, year, signal) {
+  const q  = encodeURIComponent(title.replace(/'/g, ""));
+  const lo = Math.max(1700, year - 5);
+  const hi = Math.min(2030, year + 5);
+  const url = `${LOC_BASE}?q=${q}` +
+    `&fa=location:san+francisco|online-format:image` +
+    `&dates=${lo}/${hi}&fo=json&c=3&sp=1`;
+  const res = await fetch(url, { signal }); // throws AbortError when cancelled
+  if (!res.ok) return null;
+  const data = await res.json();
+  const item = (data.results || [])[0];
+  return item?.resources?.[0]?.medium ?? item?.resources?.[0]?.small ?? null;
+}
+
+// For every record without an img, fire a LoC lookup and update it in place.
+// Refreshes the Leaflet popup for that marker as each image arrives.
+// Returns the count of records that received a LoC image.
+async function enrichImages(recs, signal) {
+  let count = 0;
+  const jobs = recs
+    .filter(r => !r.img)
+    .map(async r => {
+      try {
+        const img = await fetchLocImg(r.title, r.year, signal);
+        if (!img) return;
+        r.img = img;
+        const entry = markerRegistry.get(r.id);
+        if (entry) entry.marker.setPopupContent(buildPopup(r));
+        count++;
+      } catch (e) {
+        if (e.name !== "AbortError") console.warn("[LoC img]", r.title, e.message);
+      }
+    });
+  await Promise.allSettled(jobs);
+  return count;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPABASE CLIENT
+//
+// Credentials are read from window globals so the app works without a build
+// step. Set these in a <script> before this file:
+//   window.SUPABASE_URL      = 'https://<ref>.supabase.co';
+//   window.SUPABASE_ANON_KEY = 'eyJ...';
+// If either is missing the app falls back to BASE_RECORDS silently.
+// ─────────────────────────────────────────────────────────────────────────────
+
+let _sbClient = null;
+
+async function getSupabaseClient() {
+  if (_sbClient) return _sbClient;
+  const url = window.SUPABASE_URL;
+  const key = window.SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    console.warn(
+      "[Urban Layers] window.SUPABASE_URL / window.SUPABASE_ANON_KEY not set. " +
+      "Falling back to seeded records."
+    );
+    return null;
+  }
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  _sbClient = createClient(url, key);
+  return _sbClient;
+}
+
+// Mirrors fetchRecordsByBBox from supabase-client.js, inlined here so the
+// frontend works without a build step (no bare import specifier resolution).
+async function fetchFromSupabase(bounds, yearRange) {
+  const client = await getSupabaseClient();
+  if (!client) return null; // credentials not configured
+
+  const { north, south, east, west } = bounds;
+  const { from, to } = yearRange;
+
+  const { data, error } = await client
+    .from("records")
+    .select("id, year, title, category, description, lat, lng, architect, demolished, img_url, source, height_m")
+    .eq("verified", true)
+    .gte("lat", south).lte("lat", north)
+    .gte("lng", west).lte("lng", east)
+    .lte("year", to)
+    .or(`demolished.is.null,demolished.gte.${from}`)
+    .order("year", { ascending: true });
+
+  if (error) throw new Error(`Supabase: ${error.message}`);
+
+  return (data ?? []).map(row => ({
+    id:         row.id,
+    year:       row.year,
+    title:      row.title,
+    category:   row.category,
+    desc:       row.description ?? "",
+    lat:        row.lat,
+    lng:        row.lng,
+    architect:  row.architect  ?? null,
+    demolished: row.demolished ?? null,
+    img:        row.img_url    ?? null,
+    source:     row.source,
+    height_m:   row.height_m   ?? null,
+  }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+let viewYear         = 1950;
+let activeCategories = new Set(Object.keys(CATEGORIES));
+let records          = [...BASE_RECORDS]; // seeded fallback; replaced by Supabase results
+let debounceTimer    = null;
+let fetchGen         = 0;                 // generation counter — detects superseded fetches
+let imgAbort         = null;              // AbortController for in-flight LoC image enrichment
+let heightAbort      = null;              // AbortController for in-flight Overpass height query
+let heightCache      = new Map();         // record.id → resolved height in metres
+let dbRecordCount    = BASE_RECORDS.length;
+let locImageCount    = 0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAP INIT
+// ─────────────────────────────────────────────────────────────────────────────
+
+const map = L.map("map", {
+  center: [37.762, -122.440],
+  zoom: 13,
+  zoomControl: true
+});
+
+L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  {
+    attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: "abcd",
+    maxZoom: 19
+  }
+).addTo(map);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARKER HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+// state: "normal" | "ghost" | "future"
+// Ghost markers get a dashed SVG border; element opacity is set separately.
+function makeIcon(catColor, state) {
+  const fill      = catColor + "30";
+  const dashAttr  = state === "ghost" ? ' stroke-dasharray="3 3"' : "";
+  return L.divIcon({
+    className: "",
+    html: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="${fill}" stroke="${catColor}" stroke-width="2"${dashAttr}/>
+      <circle cx="12" cy="12" r="4.5" fill="${catColor}" style="filter:drop-shadow(0 0 3px ${catColor})"/>
+    </svg>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -16]
+  });
+}
+
+function buildPopup(r) {
+  const cat = CATEGORIES[r.category] || CATEGORIES.civic;
+  const demolishedTag = r.demolished
+    ? `<span class="popup-demolished">demolished ${r.demolished}</span>`
+    : "";
+  const architectLine = r.architect
+    ? `<div class="popup-architect">Architect: ${r.architect}</div>`
+    : "";
+  const imgBlock = r.img
+    ? `<img class="popup-img" src="${r.img}" alt="${r.title}" loading="lazy">`
+    : `<div class="popup-img-placeholder">Photo — Library of Congress</div>`;
+
+  return `
+    ${imgBlock}
+    <div class="popup-cat" style="color:${cat.color}">${cat.label}</div>
+    <div class="popup-title">${r.title}</div>
+    <div class="popup-year">Built ${r.year}${demolishedTag}</div>
+    <div class="popup-desc">${r.desc}</div>
+    ${architectLine}
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TEMPORAL LAYER LOGIC
+//
+// Pure function — no side effects, fully unit-testable.
+// Returns one of three states for a record at a given slider year:
+//   "future"  — not yet built; hidden entirely
+//   "ghost"   — demolished before `year`; shown faded with dashed border
+//   "normal"  — standing at `year`; shown at full opacity
+// ─────────────────────────────────────────────────────────────────────────────
+
+function getMarkerState(r, year) {
+  if (r.year > year) return "future";
+  if (r.demolished !== null && r.demolished <= year) return "ghost";
+  return "normal";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER
+//
+// Uses a persistent markerRegistry so existing Leaflet elements are updated
+// in-place rather than destroyed and recreated. This lets CSS opacity
+// transitions (200ms ease) run on state changes instead of markers popping.
+//
+// markerRegistry: Map<id, { marker: L.Marker, state: string }>
+// ─────────────────────────────────────────────────────────────────────────────
+
+const markersLayer  = L.layerGroup().addTo(map);
+const markerRegistry = new Map(); // id → { marker, state }
+
+// Target CSS opacity for each temporal state
+const STATE_OPACITY = { normal: "1", ghost: "0.35", future: "0" };
+
+function applyOpacity(el, state, animate) {
+  if (!el) return;
+  el.style.transition    = animate ? "opacity 200ms ease" : "none";
+  el.style.opacity       = STATE_OPACITY[state];
+  el.style.pointerEvents = state === "future" ? "none" : "auto";
+}
+
+function render() {
+  // Build the set of IDs that should have markers (category-active records)
+  const activeIds = new Set(
+    records.filter(r => activeCategories.has(r.category)).map(r => r.id)
+  );
+
+  // ── Remove/fade-out stale markers ──────────────────────────────────────
+  for (const [id, entry] of markerRegistry) {
+    if (activeIds.has(id)) continue;
+    markerRegistry.delete(id);
+    const el = entry.marker.getElement();
+    if (el) {
+      el.style.transition    = "opacity 200ms ease";
+      el.style.opacity       = "0";
+      el.style.pointerEvents = "none";
+      const m = entry.marker;
+      setTimeout(() => markersLayer.removeLayer(m), 210);
+    } else {
+      markersLayer.removeLayer(entry.marker);
+    }
+  }
+
+  // ── Add/update markers ─────────────────────────────────────────────────
+  let normalCount = 0;
+
+  records.forEach(r => {
+    if (!activeCategories.has(r.category)) return;
+
+    const state    = getMarkerState(r, viewYear);
+    const catColor = (CATEGORIES[r.category] || CATEGORIES.civic).color;
+
+    if (!markerRegistry.has(r.id)) {
+      // New marker: add to layer, fade in from transparent
+      const marker = L.marker([r.lat, r.lng], {
+        icon: makeIcon(catColor, state),
+        title: r.title
+      });
+      marker.bindPopup(buildPopup(r), { maxWidth: 320 });
+      markersLayer.addLayer(marker);
+
+      const el = marker.getElement();
+      if (el) {
+        applyOpacity(el, "future", false);           // start invisible (no transition)
+        requestAnimationFrame(() => applyOpacity(el, state, true)); // animate to target
+      }
+
+      markerRegistry.set(r.id, { marker, state });
+    } else {
+      // Existing marker: only update icon + opacity when state has changed
+      const entry = markerRegistry.get(r.id);
+      if (entry.state !== state) {
+        entry.marker.setIcon(makeIcon(catColor, state));
+        applyOpacity(entry.marker.getElement(), state, true);
+        entry.state = state;
+      }
+    }
+
+    if (state === "normal") normalCount++;
+  });
+
+  document.getElementById("visible-count").textContent = normalCount;
+  updateCounter();
+
+  // Sync 3D overlay whenever the 2D render runs
+  if (threeMode) overlaySync();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOADING STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+function setLoading(on) {
+  document.getElementById("counter").classList.toggle("loading", on);
+  if (on) document.getElementById("visible-count").textContent = "…";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNTER UPDATE
+// Separated from render() so enrichImages() can refresh the count
+// after LoC images arrive without triggering a full marker re-render.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function updateCounter() {
+  const locSuffix = locImageCount > 0 ? ` · ${locImageCount} LoC img` : "";
+  document.getElementById("total-count").textContent = dbRecordCount + locSuffix;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FETCH + UPDATE
+//
+// Primary source: Supabase fetchRecordsByBBox (bbox + year filter).
+// Secondary:      LoC image enrichment for records with no img_url in Supabase.
+// Fallback:       BASE_RECORDS when Supabase is not configured or returns empty.
+//
+// Ordering is handled with a generation counter (fetchGen) rather than
+// AbortController because the Supabase JS client does not natively expose
+// the underlying fetch signal. LoC image fetches use a separate AbortController
+// (imgAbort) so they can be cancelled immediately when a new call arrives.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Resolve real building heights for the current records array.
+ * Runs concurrently with image enrichment after each fetchData() call.
+ * Priority chain: Supabase height_m → Overpass API → category heuristic.
+ *
+ * @param {number} gen  The fetchGen snapshot at call time; used to discard
+ *                      results that arrive after a newer fetch has started.
+ */
+async function refreshHeights(gen) {
+  const ctrl = new AbortController();
+  heightAbort = ctrl;
+
+  try {
+    const { resolveHeights } = await import("./buildingHeightResolver.js");
+    if (ctrl.signal.aborted || gen !== fetchGen) return;
+
+    const snapshot = [...records];  // capture list before any awaits
+    const resolved = await resolveHeights(snapshot, { signal: ctrl.signal });
+    if (ctrl.signal.aborted || gen !== fetchGen) return;
+
+    // Merge resolved heights; keep existing entries for records outside this batch.
+    for (const [id, h] of resolved) heightCache.set(id, h);
+
+    // Re-draw 3D overlay with real heights if it is currently active.
+    if (threeMode) overlaySync();
+
+  } catch (err) {
+    if (err.name === "AbortError") return;  // cancelled cleanly — not an error
+    console.warn("[Urban Layers] Height resolution failed:", err.message);
+  }
+}
+
+async function fetchData() {
+  const myGen = ++fetchGen;
+
+  // Cancel any in-flight LoC image enrichment or Overpass height query from the previous call
+  if (imgAbort)    { imgAbort.abort();    imgAbort    = null; }
+  if (heightAbort) { heightAbort.abort(); heightAbort = null; }
+
+  setLoading(true);
+  try {
+    const bnd = map.getBounds();
+    const supaRows = await fetchFromSupabase(
+      { north: bnd.getNorth(), south: bnd.getSouth(),
+        east:  bnd.getEast(),  west:  bnd.getWest() },
+      { from: MIN_YEAR, to: viewYear }
+    );
+
+    if (myGen !== fetchGen) return; // superseded — a newer call already ran
+
+    if (supaRows === null) {
+      // Supabase not configured — keep seeded fallback
+      records = [...BASE_RECORDS];
+    } else {
+      records = supaRows.length > 0 ? supaRows : [...BASE_RECORDS];
+    }
+
+    dbRecordCount = records.length;
+    locImageCount = 0;
+    setLoading(false);
+    render(); // show DB records immediately
+
+    // Resolve real building heights from Supabase field → Overpass → heuristic.
+    // Fires concurrently; when resolved, re-draws the 3D overlay with true heights.
+    refreshHeights(myGen);
+
+    // Enrich missing images from LoC — runs concurrently, updates popups as
+    // each result arrives; cancelled instantly if fetchData() is called again
+    imgAbort = new AbortController();
+    locImageCount = await enrichImages(records, imgAbort.signal);
+    if (myGen === fetchGen && locImageCount > 0) updateCounter();
+
+  } catch (err) {
+    if (myGen !== fetchGen) return;
+    console.warn("[Urban Layers] Data fetch failed; using seeded records.", err.message);
+    records = [...BASE_RECORDS];
+    dbRecordCount = records.length;
+    locImageCount = 0;
+    setLoading(false);
+    render();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YEAR SLIDER
+// ─────────────────────────────────────────────────────────────────────────────
+
+const sliderEl  = document.getElementById("year-slider");
+const displayEl = document.getElementById("year-display");
+const MIN_YEAR  = parseInt(sliderEl.min, 10);
+const MAX_YEAR  = parseInt(sliderEl.max, 10);
+
+function updateSliderGradient() {
+  const pct = ((viewYear - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100;
+  sliderEl.style.setProperty("--pct", pct.toFixed(1) + "%");
+}
+
+sliderEl.addEventListener("input", () => {
+  viewYear = parseInt(sliderEl.value, 10);
+  displayEl.textContent = viewYear;
+  updateSliderGradient();
+  render();                          // instant re-filter from current in-memory records
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(fetchData, DEBOUNCE_MS);
+});
+
+// Re-query Supabase whenever the map viewport changes (new bbox = new records)
+map.on("moveend zoomend", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(fetchData, DEBOUNCE_MS);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY PILLS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const filtersEl = document.getElementById("category-filters");
+
+Object.entries(CATEGORIES).forEach(([key, { color, label }]) => {
+  const pill = document.createElement("button");
+  pill.className = "cat-pill active";
+  pill.textContent = label;
+  pill.dataset.cat = key;
+  pill.style.borderColor = color;
+  pill.style.backgroundColor = color + "28";
+  pill.style.color = color;
+
+  pill.addEventListener("click", () => {
+    if (activeCategories.has(key)) {
+      activeCategories.delete(key);
+      pill.classList.remove("active");
+    } else {
+      activeCategories.add(key);
+      pill.classList.add("active");
+    }
+    render();
+  });
+
+  filtersEl.appendChild(pill);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────────────────────
+
+updateSliderGradient();
+render();        // show seeded BASE_RECORDS immediately while Supabase connects
+fetchData();     // primary: Supabase bbox query; LoC fills img gaps for null img_url
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMUNITY CONTRIBUTION DRAWER
+// ─────────────────────────────────────────────────────────────────────────────
+
+let pickingLocation = false;
+let pickMarker      = null;
+
+function openDrawer() {
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawer-backdrop").classList.add("open");
+}
+
+function closeDrawer() {
+  if (pickingLocation) exitPickMode();
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("drawer-backdrop").classList.remove("open");
+  setTimeout(resetDrawerForm, 300); // reset after slide-out animation
+}
+
+function resetDrawerForm() {
+  ["f-title","f-year","f-desc","f-lat","f-lng","f-arch","f-dem-year","f-img"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("f-cat").value = "";
+  document.getElementById("f-dem-toggle").checked = false;
+  document.getElementById("f-dem-wrap").style.display = "none";
+
+  document.querySelectorAll(".drw-err").forEach(el => el.classList.remove("show"));
+  document.querySelectorAll(".drw-field input.err, .drw-field select.err")
+    .forEach(el => el.classList.remove("err"));
+
+  const submitErr = document.getElementById("submit-err");
+  submitErr.classList.remove("show");
+  submitErr.textContent = "";
+
+  document.getElementById("drawer-form").style.display = "";
+  document.getElementById("drawer-success").classList.remove("show");
+  document.getElementById("drawer-submit").disabled = false;
+
+  if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
+}
+
+function enterPickMode() {
+  pickingLocation = true;
+  const btn = document.getElementById("pick-btn");
+  btn.classList.add("picking");
+  btn.textContent = "Cancel pick";
+  document.getElementById("pick-hint").classList.add("show");
+  // Let clicks through to the map
+  document.getElementById("drawer-backdrop").style.pointerEvents = "none";
+  map.once("click", onMapPick);
+}
+
+function exitPickMode() {
+  pickingLocation = false;
+  const btn = document.getElementById("pick-btn");
+  btn.classList.remove("picking");
+  btn.textContent = "Pick on map";
+  document.getElementById("pick-hint").classList.remove("show");
+  document.getElementById("drawer-backdrop").style.pointerEvents = "";
+  map.off("click", onMapPick);
+}
+
+function onMapPick(e) {
+  exitPickMode();
+  const { lat, lng } = e.latlng;
+  document.getElementById("f-lat").value = lat.toFixed(5);
+  document.getElementById("f-lng").value = lng.toFixed(5);
+
+  if (pickMarker) map.removeLayer(pickMarker);
+  pickMarker = L.circleMarker([lat, lng], {
+    radius: 7,
+    color: "#d4a857",
+    weight: 2,
+    fillColor: "#d4a857",
+    fillOpacity: 0.35
+  }).addTo(map);
+
+  document.getElementById("f-lat").classList.remove("err");
+  document.getElementById("f-lng").classList.remove("err");
+  document.getElementById("err-loc").classList.remove("show");
+}
+
+function validateForm() {
+  let valid = true;
+
+  // Title
+  const title = document.getElementById("f-title").value.trim();
+  if (!title) {
+    document.getElementById("f-title").classList.add("err");
+    document.getElementById("err-title").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-title").classList.remove("err");
+    document.getElementById("err-title").classList.remove("show");
+  }
+
+  // Year
+  const yearVal = parseInt(document.getElementById("f-year").value, 10);
+  if (!yearVal || yearVal < 1800 || yearVal > 2000) {
+    document.getElementById("f-year").classList.add("err");
+    document.getElementById("err-year").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-year").classList.remove("err");
+    document.getElementById("err-year").classList.remove("show");
+  }
+
+  // Category
+  const cat = document.getElementById("f-cat").value;
+  if (!cat) {
+    document.getElementById("f-cat").classList.add("err");
+    document.getElementById("err-cat").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-cat").classList.remove("err");
+    document.getElementById("err-cat").classList.remove("show");
+  }
+
+  // Location
+  const latVal = parseFloat(document.getElementById("f-lat").value);
+  const lngVal = parseFloat(document.getElementById("f-lng").value);
+  if (isNaN(latVal) || isNaN(lngVal)) {
+    document.getElementById("f-lat").classList.add("err");
+    document.getElementById("f-lng").classList.add("err");
+    document.getElementById("err-loc").classList.add("show");
+    valid = false;
+  } else {
+    document.getElementById("f-lat").classList.remove("err");
+    document.getElementById("f-lng").classList.remove("err");
+    document.getElementById("err-loc").classList.remove("show");
+  }
+
+  return valid;
+}
+
+async function inlineSubmitContribution(record) {
+  const client = await getSupabaseClient();
+  if (!client) throw new Error("Supabase is not configured. Cannot submit.");
+
+  const { data: { user }, error: authError } = await client.auth.getUser();
+  if (authError || !user) {
+    throw new Error("You must be signed in to submit a contribution.");
+  }
+
+  const payload = {
+    year:           record.year,
+    title:          record.title,
+    category:       record.category,
+    description:    record.description  ?? null,
+    lat:            record.lat,
+    lng:            record.lng,
+    architect:      record.architect    ?? null,
+    demolished:     record.demolished   ?? null,
+    img_url:        record.img_url      ?? null,
+    source:         "community",
+    contributor_id: user.id,
+    status:         "pending",
+    verified:       false,
+  };
+
+  const { data, error } = await client
+    .from("contributions")
+    .insert(payload)
+    .select("id, status, created_at")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+async function handleDrawerSubmit() {
+  if (!validateForm()) return;
+
+  const submitBtn = document.getElementById("drawer-submit");
+  const submitErr = document.getElementById("submit-err");
+  submitBtn.disabled = true;
+  submitErr.classList.remove("show");
+  submitErr.textContent = "";
+
+  const demOn      = document.getElementById("f-dem-toggle").checked;
+  const demYearRaw = parseInt(document.getElementById("f-dem-year").value, 10);
+
+  const record = {
+    year:        parseInt(document.getElementById("f-year").value, 10),
+    title:       document.getElementById("f-title").value.trim(),
+    category:    document.getElementById("f-cat").value,
+    description: document.getElementById("f-desc").value.trim() || null,
+    lat:         parseFloat(document.getElementById("f-lat").value),
+    lng:         parseFloat(document.getElementById("f-lng").value),
+    architect:   document.getElementById("f-arch").value.trim() || null,
+    demolished:  demOn && !isNaN(demYearRaw) ? demYearRaw : null,
+    img_url:     document.getElementById("f-img").value.trim() || null,
+  };
+
+  try {
+    await inlineSubmitContribution(record);
+    document.getElementById("drawer-form").style.display = "none";
+    document.getElementById("drawer-success").classList.add("show");
+    setTimeout(closeDrawer, 2800);
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitErr.textContent = err.message || "Submission failed. Please try again.";
+    submitErr.classList.add("show");
+  }
+}
+
+// ── Drawer event listeners ────────────────────────────────────────────────────
+document.getElementById("submit-btn").addEventListener("click", openDrawer);
+document.getElementById("drawer-backdrop").addEventListener("click", closeDrawer);
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+document.getElementById("drawer-cancel").addEventListener("click", closeDrawer);
+document.getElementById("drawer-submit").addEventListener("click", handleDrawerSubmit);
+
+document.getElementById("pick-btn").addEventListener("click", () => {
+  if (pickingLocation) exitPickMode(); else enterPickMode();
+});
+
+document.getElementById("f-dem-toggle").addEventListener("change", function () {
+  document.getElementById("f-dem-wrap").style.display = this.checked ? "" : "none";
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THREE.JS 3D LAYER  — wiring for ThreeOverlay (three-overlay.js)
+//
+// ThreeOverlay is a self-contained ES module. It owns its canvas, renderer,
+// scene, camera, and InstancedMesh instances, and listens to Leaflet viewport
+// events internally. Index.html is responsible only for:
+//   1. Importing the class lazily on first 3D activation.
+//   2. Calling overlaySync() whenever records / year / filters change so the
+//      overlay's building list stays in sync with the 2D marker state.
+// ─────────────────────────────────────────────────────────────────────────────
+
+let threeMode = false;
+let overlay   = null;  // ThreeOverlay — created once, reused on subsequent toggles
+
+/**
+ * Push the current in-scope records into the overlay and draw one frame.
+ * Mirrors the same state that render() uses for 2D markers so both views
+ * are always consistent: same year filter, same category filter.
+ * Also refreshes the 3D building list sidebar when it is visible.
+ */
+function overlaySync() {
+  if (!overlay) return;
+  overlay.clearBuildings();
+  for (const r of records) {
+    if (!activeCategories.has(r.category)) continue;
+    const state = getMarkerState(r, viewYear);
+    if (state === "future") continue;
+    overlay.addBuilding(r, { ghost: state === "ghost", heightM: heightCache.get(r.id) ?? null });
+  }
+  overlay.render();
+  if (threeMode) updateBuildingList();
+}
+
+/**
+ * Called when the user clicks a 3D building (raycasting) or a sidebar row.
+ * Opens the existing Leaflet popup system at the building's lat/lng.
+ *
+ * @param {object|null} record
+ */
+function onBuildingSelect(record) {
+  if (!record) return;
+  L.popup({ closeButton: true, maxWidth: 320 })
+    .setLatLng([record.lat, record.lng])
+    .setContent(buildPopup(record))
+    .openOn(map);
+  // Highlight the matching sidebar row
+  document.querySelectorAll(".blist-item").forEach(el => {
+    el.classList.toggle("selected", el.dataset.id === record.id);
+  });
+}
+
+/**
+ * Populate #building-list-3d with the currently visible buildings.
+ * Clicking a row flies the camera to that building and opens the popup.
+ */
+function updateBuildingList() {
+  const panel = document.getElementById("building-list-3d");
+  if (!threeMode) { panel.style.display = "none"; return; }
+  panel.style.display = "";
+
+  const container = document.getElementById("building-list-items");
+  container.innerHTML = "";
+
+  const visible = records.filter(r => {
+    if (!activeCategories.has(r.category)) return false;
+    return getMarkerState(r, viewYear) !== "future";
+  });
+
+  visible.forEach(r => {
+    const div = document.createElement("div");
+    div.className  = "blist-item";
+    div.dataset.id = r.id;
+    div.textContent = `${r.title} (${r.year})`;
+    div.title = r.title;
+    div.addEventListener("click", () => {
+      if (overlay) overlay.flyTo(r);
+      onBuildingSelect(r);
+    });
+    container.appendChild(div);
+  });
+}
+
+document.getElementById("toggle-3d").addEventListener("click", async () => {
+  threeMode = !threeMode;
+  const btn = document.getElementById("toggle-3d");
+
+  if (threeMode) {
+    // Import and instantiate once; subsequent toggles reuse the same instance.
+    if (!overlay) {
+      const { ThreeOverlay } = await import("./three-overlay.js");
+      overlay = new ThreeOverlay(map, {
+        categories:  CATEGORIES,
+        containerId: "map-container",
+      });
+    }
+    await overlay.show();                       // lazy Three.js init + canvas visible + events bound
+    await overlay.enableControls(onBuildingSelect); // attach OrbitControls + raycasting
+    overlaySync();                              // populate buildings and draw first frame
+
+    map.getPanes().markerPane.style.display = "none";
+    map.getPanes().shadowPane.style.display = "none";
+
+    // Disable Leaflet navigation to prevent conflicts with OrbitControls.
+    // Pan, zoom, and keyboard shortcuts all route through the Three.js canvas
+    // while in 3D mode; the Leaflet map is effectively frozen as a backdrop.
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+
+    btn.textContent = "2D Mode";
+    btn.classList.add("active-3d");
+  } else {
+    overlay.disableControls();
+    overlay.hide();
+
+    map.getPanes().markerPane.style.display = "";
+    map.getPanes().shadowPane.style.display = "";
+
+    // Re-enable Leaflet navigation
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+
+    document.getElementById("building-list-3d").style.display = "none";
+
+    btn.textContent = "3D Mode";
+    btn.classList.remove("active-3d");
+  }
+});
+</script>
+</body>
+</html>
